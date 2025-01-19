@@ -8,8 +8,8 @@ from api import router as api_router
 from core.config import settings
 from core.log_config import setup_logging
 from exceptions.exception import exception_handlers
-from middlewares import log_stuff
 from lifespan import lifespan
+from middlewares import log_stuff
 
 setup_logging()
 logger = logging.getLogger(__name__)

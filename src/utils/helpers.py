@@ -2,6 +2,7 @@ import jwt
 from fastapi import Depends, Request
 
 from exceptions.errors import UnauthorizedExc
+from services.auth_service import AuthService, get_auth_service
 
 
 def get_access_token_from_cookies(request: Request):
@@ -15,6 +16,7 @@ def get_access_token_from_cookies(request: Request):
 
 async def get_user_id_from_access_token(
     access_token: str = Depends(get_access_token_from_cookies),
+    auth_service: AuthService = Depends(get_auth_service),
 ):
     try:
         payload = jwt.decode(
@@ -23,6 +25,8 @@ async def get_user_id_from_access_token(
         )
     except jwt.InvalidTokenError:
         raise UnauthorizedExc("Token is invalid")
+
+    await auth_service.verify(access_token)
 
     user_id = payload.get("user_id")
     if not user_id:

@@ -21,3 +21,15 @@ class NoResult(Exception):
     """Данные по запросу не были найдены"""
 
     pass
+
+
+class UnauthorizedError(Exception):
+    """Ошибка авторизации"""
+
+    pass
+
+
+class BadRequestError(Exception):
+    """Ошибка в теле запроса"""
+
+    pass

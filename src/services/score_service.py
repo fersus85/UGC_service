@@ -1,9 +1,10 @@
 import uuid
 from functools import lru_cache
 
-from db.mongo.mongo_rep import MongoRepository, get_mongo_repository
 from fastapi import Depends, HTTPException, status
 from pymongo.errors import DuplicateKeyError
+
+from db.mongo.mongo_rep import MongoRepository, get_mongo_repository
 
 
 class FilmScoreService:
@@ -12,36 +13,38 @@ class FilmScoreService:
     def __init__(self, mongo_repository: MongoRepository):
         """Инициализирует сервис оценок фильмов."""
         self._mongo_repository = mongo_repository
-        self.collection_name = 'film_score'
+        self.collection_name = "film_score"
 
-    async def add_score(self, film_id: uuid.UUID, user_id: uuid.UUID, film_score: float) -> dict[str, str]:
+    async def add_score(
+        self, film_id: uuid.UUID, user_id: uuid.UUID, film_score: int
+    ) -> dict[str, str]:
         """Добавляет оценку фильма."""
         try:
             result = await self._mongo_repository.insert_one(
                 self.collection_name,
                 {
-                    'film_id': str(film_id),
-                    'user_id': str(user_id),
-                    'film_score': film_score,
+                    "film_id": str(film_id),
+                    "user_id": str(user_id),
+                    "film_score": film_score,
                 },
             )
             if result:
                 review = await self._mongo_repository.find_one(
-                    'film_reviews',
-                    {'film_id': str(film_id), 'user_id': str(user_id)},
+                    "film_reviews",
+                    {"film_id": str(film_id), "user_id": str(user_id)},
                 )
                 if review:
                     await self._mongo_repository.update_one(
-                        'film_reviews',
-                        {'film_id': str(film_id), 'user_id': str(user_id)},
-                        {'film_score': film_score},
+                        "film_reviews",
+                        {"film_id": str(film_id), "user_id": str(user_id)},
+                        {"film_score": film_score},
                     )
-            return result  # type: ignore[no-any-return]
-        except DuplicateKeyError as er:
+            return result
+        except DuplicateKeyError as ex:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail='the score has already been added to film_score',
-            ) from er
+                detail="the score has already been added to film_score",
+            ) from ex
 
     async def delete_score(
         self,
@@ -49,9 +52,9 @@ class FilmScoreService:
         user_id: uuid.UUID,
     ) -> int | None:
         """Удаляет оценку фильма."""
-        return await self._mongo_repository.delete_one(  # type: ignore[no-any-return]
+        return await self._mongo_repository.delete_one(
             collection_name=self.collection_name,
-            query={'film_id': str(film_id), 'user_id': str(user_id)},
+            query={"film_id": str(film_id), "user_id": str(user_id)},
         )
 
     async def get_score(
@@ -61,12 +64,14 @@ class FilmScoreService:
         """Возвращает среднюю оценку фильма."""
         film_scores = await self._mongo_repository.find_all(
             collection_name=self.collection_name,
-            query={'film_id': str(film_id)},
+            query={"film_id": str(film_id)},
         )
         if not film_scores:
             return None
 
-        sum_score = sum(float(film_score.get('film_score')) for film_score in film_scores)
+        sum_score = sum(
+            float(film_score.get("film_score")) for film_score in film_scores
+        )
         return sum_score / len(film_scores)
 
 

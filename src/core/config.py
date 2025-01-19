@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     MONGO_HOST: str = "mongos1"
     MONGO_PORT: int = 27019
     MONGO_DB: str = "ugc2_movies"
+    AUTH_SERVICE_URL: str
 
 
 settings = Settings()

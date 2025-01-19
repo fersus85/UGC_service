@@ -1,7 +1,9 @@
+import logging
+
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from core.config import settings
 from db.mongo import mongo_rep  # type: ignore[attr-defined]
-import logging
-from motor.motor_asyncio import AsyncIOMotorClient
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +16,8 @@ async def on_startup(data_storage_hosts: list[str]) -> None:
     global mongo_client
     try:
         mongo_client = AsyncIOMotorClient(
-            data_storage_hosts,  
-            # username=settings.mongo_username, 
+            data_storage_hosts,
+            # username=settings.mongo_username,
             # password=settings.mongo_password
         )
         db = mongo_client[settings.MONGO_DB]

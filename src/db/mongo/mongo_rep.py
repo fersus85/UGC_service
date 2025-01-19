@@ -1,10 +1,10 @@
-from core.config import settings
 import logging
 
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCursor
 from pymongo import ReturnDocument
 from pymongo.collection import InsertOneResult, UpdateResult
 
+from core.config import settings
 
 logger = logging.getLogger(__name__)
 

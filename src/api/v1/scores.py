@@ -4,8 +4,8 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.params import Depends
 
 from schemas.scores import AddScore
-from utils.helpers import get_user_id_from_access_token
 from services.score_service import FilmScoreService, get_film_score_service
+from utils.helpers import get_user_id_from_access_token
 
 logger = logging.getLogger(__name__)
 
@@ -26,11 +26,15 @@ async def add_film_score(
     user_id: str = Depends(get_user_id_from_access_token),
     score_service: FilmScoreService = Depends(get_film_score_service),
 ) -> None:
-    """Добавляет оценку к фильму."""
-    logger.info(f"user_id: {user_id}")
-    logger.info(f"data: {data}")
-    result = await score_service.add_score(data.film_id, user_id, data.film_score)
-    logger.info(f"result: {result}")
+    """
+    Добавляет оценку к фильму.
+    Параметры:
+        film_id: UUID - UUID фильма
+        film_score: int - Оценка, от 0 до 10
+    """
+    result = await score_service.add_score(
+        data.film_id, user_id, data.film_score
+    )
     if not result:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

@@ -38,8 +38,8 @@ services:
       - ./nginx/localhost.crt:/etc/nginx/localhost.crt:ro
       - ./nginx/localhost.key:/etc/nginx/localhost.key:ro
     ports:
-      - "80:80"
-      - "443:443"
+      - "82:80"
+      - "442:443"
     depends_on:
       fastapi-ugc2:
         condition: service_healthy
