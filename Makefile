@@ -29,7 +29,7 @@ up-mongo:
 # Инициализация кластера MongoDB
 init-mongo:
 	@echo "Инициализация MongoDB..."
-	@mongo/init.sh
+	@bash ./mongo/init.sh
 
 # Oстановкa кластера MongoDB
 down-mongo:
