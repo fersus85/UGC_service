@@ -1,0 +1,15 @@
+fastapi==0.115.7
+uvicorn-worker==0.3.0
+orjson==3.10.15
+kafka-python==2.0.2
+requests==2.32.3
+PyJWT==2.10.1
+python-dotenv==1.0.1
+redis==5.2.1
+pydantic==2.10.6
+pydantic-settings==2.7.1
+mypy==1.14.1
+motor==3.6.1
+isort==5.13.2
+black==24.10.0
+flake8==7.1.1
