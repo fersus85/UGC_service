@@ -1,8 +1,9 @@
 import logging
-
-from fastapi import APIRouter, HTTPException, status, Path
-from fastapi.params import Depends
 from uuid import UUID
+
+from fastapi import APIRouter, HTTPException, Path, status
+from fastapi.params import Depends
+
 from schemas.scores import AddScore, AverageScore
 from services.score_service import FilmScoreService, get_film_score_service
 from utils.helpers import get_user_id_from_access_token

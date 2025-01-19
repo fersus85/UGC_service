@@ -7,18 +7,17 @@ from db.mongo import mongo_rep  # type: ignore[attr-defined]
 
 logger = logging.getLogger(__name__)
 
-# MongoDB client
 mongo_client: AsyncIOMotorClient | None = None
 
 
 async def on_startup(data_storage_hosts: list[str]) -> None:
-    """Выполняет необходимые операции при запуске приложения."""
+    """
+    Выполняет необходимые операции при запуске приложения.
+    """
     global mongo_client
     try:
         mongo_client = AsyncIOMotorClient(
             data_storage_hosts,
-            # username=settings.mongo_username,
-            # password=settings.mongo_password
         )
         db = mongo_client[settings.MONGO_DB]
 
@@ -40,14 +39,13 @@ async def on_startup(data_storage_hosts: list[str]) -> None:
 
         mongo_rep.mongo_repository = mongo_rep.MongoRepository(mongo_client)
         logger.info("Connected to MongoDB successfully.")
-    except Exception as er:
-        logger.exception(f"Error connecting to MongoDB: {er}")
+    except Exception as ex:
+        logger.exception(f"Error connecting to MongoDB: {ex}")
 
 
 def on_shutdown() -> None:
     """
     Выполняет необходимые операции при завершении работы приложения.
-
     Закрывает соединение с MongoDB, если оно было установлено.
     """
     if mongo_client:
