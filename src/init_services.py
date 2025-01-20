@@ -1,23 +1,29 @@
 import logging
 
 from motor.motor_asyncio import AsyncIOMotorClient
+from redis.asyncio import Redis
 
+import db.casher as cacher
 from core.config import settings
-from db.mongo import mongo_rep
+from db import mongo, redis
 
 logger = logging.getLogger(__name__)
 
-mongo_client: AsyncIOMotorClient | None = None
 
-
-async def on_startup(data_storage_hosts: list[str]) -> None:
-    """
-    Выполняет необходимые операции при запуске приложения.
-    """
-    global mongo_client
+async def init_casher():
     try:
-        mongo_client = AsyncIOMotorClient(
-            data_storage_hosts,
+        redis.redis = Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
+        cacher.cacher = redis.RedisCache(redis.redis)
+    except Exception as ex:
+        logger.exception(f"Error connecting to Redis: {ex}")
+
+
+async def init_mongo():
+
+    try:
+
+        mongo_client: AsyncIOMotorClient = AsyncIOMotorClient(
+            settings.MONGO_HOST
         )
         db = mongo_client[settings.MONGO_DB]
 
@@ -37,17 +43,10 @@ async def on_startup(data_storage_hosts: list[str]) -> None:
                 [("film_id", 1), ("user_id", 1)], unique=True
             )
 
-        mongo_rep.mongo_repository = mongo_rep.MongoRepository(mongo_client)
+        mongo.mongo_repository = mongo.MongoRepository(mongo_client)
+
         logger.info("Connected to MongoDB successfully.")
+
     except Exception as ex:
+
         logger.exception(f"Error connecting to MongoDB: {ex}")
-
-
-def on_shutdown() -> None:
-    """
-    Выполняет необходимые операции при завершении работы приложения.
-    Закрывает соединение с MongoDB, если оно было установлено.
-    """
-    if mongo_client:
-        mongo_client.close()
-        logger.info("Disconnected from MongoDB.")

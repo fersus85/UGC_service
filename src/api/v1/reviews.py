@@ -1,18 +1,11 @@
 import datetime
-
 from uuid import UUID
-from utils.helpers import PaginateQueryParams
+
+from fastapi import APIRouter, Body, Depends, HTTPException, Path, status
+
 from schemas.reviews import FilmReview, FilmReviewPost
-from utils.helpers import get_user_id_from_access_token
-from fastapi import (
-    APIRouter,
-    Body,
-    Depends,
-    HTTPException,
-    status,
-    Path,
-)
 from services.review_service import ReviewsService, get_review_service
+from utils.helpers import PaginateQueryParams, get_user_id_from_access_token
 
 router = APIRouter(
     prefix="/reviews",
@@ -104,7 +97,8 @@ async def delete_film_review(
     )
     if result is None or result == 0:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Error deleting review."
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Error deleting review.",
         )
     return None
 
@@ -133,7 +127,8 @@ async def edit_film_review(
     )
     if updated_review is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Error updating review."
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Error updating review.",
         )
     return FilmReview(
         review_id=str(updated_review.get("_id")), **updated_review

@@ -4,7 +4,7 @@ from functools import lru_cache
 from fastapi import Depends, HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
-from db.mongo.mongo_rep import MongoRepository, get_mongo_repository
+from db.mongo import MongoRepository, get_mongo_repository
 
 
 class FilmScoreService:

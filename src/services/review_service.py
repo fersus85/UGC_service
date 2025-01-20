@@ -3,8 +3,9 @@ import uuid
 from functools import lru_cache
 
 import bson
-from db.mongo.mongo_rep import MongoRepository, get_mongo_repository
 from fastapi import Depends
+
+from db.mongo import MongoRepository, get_mongo_repository
 
 
 class ReviewsService:

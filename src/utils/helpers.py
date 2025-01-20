@@ -1,9 +1,8 @@
 import jwt
-from fastapi import Depends, Request
+from fastapi import Depends, Query, Request
 
 from exceptions.errors import UnauthorizedExc
 from services.auth_service import AuthService, get_auth_service
-from fastapi import Query
 
 
 def get_access_token_from_cookies(request: Request):
@@ -19,6 +18,10 @@ async def get_user_id_from_access_token(
     access_token: str = Depends(get_access_token_from_cookies),
     auth_service: AuthService = Depends(get_auth_service),
 ):
+    """
+    Извлекает user_id из Access токена
+    и проверяет валидность токена через Auth Service
+    """
     try:
         payload = jwt.decode(
             access_token,
@@ -37,7 +40,9 @@ async def get_user_id_from_access_token(
 
 
 class PaginateQueryParams:
-    """Класс для разделения ответов на страницы."""
+    """
+    Класс для разделения ответов на страницы.
+    """
 
     def __init__(
         self,
@@ -55,6 +60,8 @@ class PaginateQueryParams:
             le=100,
         ),
     ):
-        """Инициализирует класс пагинации ответов."""
+        """
+        Инициализирует класс пагинации ответов.
+        """
         self.page_number = page_number
         self.page_size = page_size
