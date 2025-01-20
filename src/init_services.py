@@ -17,7 +17,7 @@ from models.mongo_models import (
 logger = logging.getLogger(__name__)
 
 
-async def init_casher():
+async def init_casher() -> None:
     """
     Инициализация Redis Cache
     """
@@ -28,7 +28,7 @@ async def init_casher():
         logger.exception("Error connecting to Redis: %s", ex)
 
 
-async def init_mongo():
+async def init_mongo() -> None:
     """
     Инициализация MongoDB посредством Beanie ODM
     """
@@ -39,10 +39,8 @@ async def init_mongo():
             settings.MONGO_HOST
         )
 
-        db_name = settings.MONGO_DB + "_new"
-
         await init_beanie(
-            database=mongo_client[db_name],
+            database=mongo_client[settings.MONGO_DB],
             document_models=[
                 FilmScoreModel,
                 FilmBookmarkModel,

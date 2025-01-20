@@ -12,7 +12,8 @@ class FilmScoreModel(Document):
     Модель таблицы с оценками фильмов.
     """
 
-    id: UUID = Field(default_factory=uuid4)
+    # https://github.com/BeanieODM/beanie/issues/336
+    id: UUID = Field(default_factory=uuid4)  # type: ignore
     film_id: UUID
     user_id: UUID
     film_score: int = Field(..., ge=0, le=10)
@@ -36,7 +37,7 @@ class FilmBookmarkModel(Document):
     Модель таблицы с пользовательскими закладками фильмов.
     """
 
-    id: UUID = Field(default_factory=uuid4)
+    id: UUID = Field(default_factory=uuid4)  # type: ignore
     film_id: UUID
     user_id: UUID
 
@@ -59,7 +60,7 @@ class FilmReviewModel(Document):
     Модель таблицы с пользовательскими отзывами на фильмы.
     """
 
-    id: UUID = Field(default_factory=uuid4)
+    id: UUID = Field(default_factory=uuid4)  # type: ignore
     film_id: UUID
     user_id: UUID
     review_text: str
@@ -87,7 +88,7 @@ class ReviewLikeModel(Document):
     Модель таблицы с лайками на отзывы.
     """
 
-    id: UUID = Field(default_factory=uuid4)
+    id: UUID = Field(default_factory=uuid4)  # type: ignore
     review_id: UUID
     user_id: UUID
 

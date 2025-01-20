@@ -18,7 +18,7 @@ class BookmarksService:
         """
         pass
 
-    async def get_bookmark_films(self, user_id: UUID) -> list[UUID] | None:
+    async def get_bookmark_films(self, user_id: str) -> list[UUID]:
         """
         Возвращает список id фильмов, добавленных пользователем в закладки.
         """
@@ -33,14 +33,14 @@ class BookmarksService:
                 detail=f"error finding film bookmarks: {ex}",
             ) from ex
 
-    async def add_film_to_bookmarks(
-        self, film_id: UUID, user_id: UUID
-    ) -> None:
+    async def add_film_to_bookmarks(self, film_id: str, user_id: str) -> None:
         """
         Добавляет фильм в закладки.
         """
         try:
-            await FilmBookmarkModel(film_id=film_id, user_id=user_id).insert()
+            await FilmBookmarkModel(
+                film_id=UUID(film_id), user_id=UUID(user_id)
+            ).insert()
         except DuplicateKeyError:
             pass
         except Exception as ex:
@@ -50,7 +50,7 @@ class BookmarksService:
             ) from ex
 
     async def delete_film_from_bookmarks(
-        self, film_id: UUID, user_id: UUID
+        self, film_id: str, user_id: str
     ) -> None:
         """
         Удаляет фильм из закладок пользователя.
@@ -58,7 +58,7 @@ class BookmarksService:
         try:
             await FilmBookmarkModel.find_one(
                 FilmBookmarkModel.user_id == UUID(user_id),
-                FilmBookmarkModel.film_id == UUID(str(film_id)),
+                FilmBookmarkModel.film_id == UUID(film_id),
             ).delete()
         except Exception as ex:
             raise HTTPException(

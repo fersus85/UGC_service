@@ -9,8 +9,9 @@ class AbstractCache(Protocol):
     async def get(self, key: str) -> Optional[Any]: ...
 
 
-cacher = Optional[AbstractCache]
+# cacher = Optional[AbstractCache]
+cacher: Optional[AbstractCache] = None
 
 
-async def get_cacher() -> AbstractCache:
+async def get_cacher() -> AbstractCache | None:
     return cacher

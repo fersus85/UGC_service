@@ -5,7 +5,7 @@ import pathlib
 from .config import settings
 
 
-def setup_logging():
+def setup_logging() -> None:
     suf: str = settings.ENV.lower()
     config_file = (
         pathlib.Path(__file__).resolve().parent / f"log_{suf}_config.json"

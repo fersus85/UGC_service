@@ -35,7 +35,7 @@ async def get_user_id_from_access_token(
 
     await auth_service.verify(access_token)
 
-    user_id: str = payload.get("user_id")
+    user_id = payload.get("user_id")
     if not user_id:
         raise UnauthorizedExc("User ID not found")
 

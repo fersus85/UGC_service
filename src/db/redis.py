@@ -36,7 +36,7 @@ class RedisCache(AbstractCache):
 redis: Optional[Redis] = None
 
 
-async def get_redis() -> Redis:
+async def get_redis() -> Redis | None:
     return redis
 
 

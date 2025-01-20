@@ -1,8 +1,7 @@
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, Path, status
-from fastapi.params import Depends
+from fastapi import APIRouter, Depends, Path, status
 
 from services.bookmark_service import BookmarksService, get_bookmark_service
 from utils.helpers import get_user_id_from_access_token

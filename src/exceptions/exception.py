@@ -12,7 +12,7 @@ from exceptions.exc_handlers import (
 
 exception_handlers: dict[
     int | type[Exception],
-    Callable[[Request, Exception], Coroutine[Any, Any, Response]],
+    Callable[[Request, errors.UnauthorizedExc], Coroutine[Any, Any, Response]],
 ] = {
     errors.PasswordOrLoginExc: password_or_login_error_handler,
     errors.UnauthorizedExc: unauthorized_error_handler,

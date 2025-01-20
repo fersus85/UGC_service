@@ -1,5 +1,4 @@
 import logging
-import uuid
 from functools import lru_cache
 from uuid import UUID
 
@@ -25,7 +24,7 @@ class FilmScoreService:
         pass
 
     async def add_score(
-        self, film_id: UUID, user_id: UUID, film_score: int
+        self, film_id: str, user_id: str, film_score: int
     ) -> None:
         """
         Добавляет или обновляет оценку фильма.
@@ -39,10 +38,11 @@ class FilmScoreService:
         except DuplicateKeyError:
             existing_film_score = await FilmScoreModel.find_one(
                 FilmScoreModel.user_id == UUID(user_id),
-                FilmScoreModel.film_id == UUID(str(film_id)),
+                FilmScoreModel.film_id == UUID(film_id),
             )
-            existing_film_score.film_score = film_score
-            await existing_film_score.save()
+            if existing_film_score:
+                existing_film_score.film_score = film_score
+                await existing_film_score.save()
 
         except Exception as ex:
             raise HTTPException(
@@ -52,7 +52,7 @@ class FilmScoreService:
 
         existing_film_review = await FilmReviewModel.find_one(
             FilmScoreModel.user_id == UUID(user_id),
-            FilmScoreModel.film_id == UUID(str(film_id)),
+            FilmScoreModel.film_id == UUID(film_id),
         )
         if existing_film_review:
             existing_film_review.film_score = film_score
@@ -60,8 +60,8 @@ class FilmScoreService:
 
     async def delete_score(
         self,
-        film_id: uuid.UUID,
-        user_id: uuid.UUID,
+        film_id: str,
+        user_id: str,
     ) -> None:
         """
         Удаляет оценку фильма.
@@ -69,7 +69,7 @@ class FilmScoreService:
         try:
             await FilmScoreModel.find_one(
                 FilmScoreModel.user_id == UUID(user_id),
-                FilmScoreModel.film_id == UUID(str(film_id)),
+                FilmScoreModel.film_id == UUID(film_id),
             ).delete()
         except Exception as ex:
             raise HTTPException(
@@ -79,14 +79,14 @@ class FilmScoreService:
 
     async def get_score(
         self,
-        film_id: uuid.UUID,
+        film_id: str,
     ) -> float | None:
         """
         Возвращает среднюю оценку фильма.
         """
 
         avg_score = await FilmScoreModel.find(
-            FilmScoreModel.film_id == UUID(str(film_id)),
+            FilmScoreModel.film_id == UUID(film_id),
         ).avg(FilmScoreModel.film_score)
         return avg_score
 

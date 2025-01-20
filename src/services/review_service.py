@@ -1,4 +1,3 @@
-import uuid
 from functools import lru_cache
 from uuid import UUID
 
@@ -27,9 +26,9 @@ class ReviewsService:
 
     async def add_review(
         self,
-        film_id: UUID,
+        film_id: str,
         review_text: str,
-        user_id: UUID,
+        user_id: str,
         film_score: int,
     ) -> None:
         """
@@ -38,8 +37,8 @@ class ReviewsService:
         try:
 
             await FilmReviewModel(
-                film_id=film_id,
-                user_id=user_id,
+                film_id=UUID(film_id),
+                user_id=UUID(user_id),
                 film_score=film_score,
                 review_text=review_text,
             ).insert()
@@ -59,7 +58,7 @@ class ReviewsService:
         # ищем, существует ли отдельная оценка фильма
         existing_film_score = await FilmScoreModel.find_one(
             FilmScoreModel.user_id == UUID(user_id),
-            FilmScoreModel.film_id == UUID(str(film_id)),
+            FilmScoreModel.film_id == UUID(film_id),
         )
         # если существует отдельная оценка - обновляем отдельную оценку
         if existing_film_score:
@@ -68,12 +67,14 @@ class ReviewsService:
         # если нет отдельной оценки - добавляем
         else:
             await FilmScoreModel(
-                film_id=film_id, user_id=user_id, film_score=film_score
+                film_id=UUID(film_id),
+                user_id=UUID(user_id),
+                film_score=film_score,
             ).insert()
 
         return None
 
-    async def delete_review(self, review_id: UUID, user_id: UUID) -> None:
+    async def delete_review(self, review_id: str, user_id: str) -> None:
         """
         Удаляет отзыв о фильме.
         """
@@ -90,14 +91,14 @@ class ReviewsService:
 
         return None
 
-    async def like_review(self, review_id: UUID, user_id: UUID) -> None:
+    async def like_review(self, review_id: str, user_id: str) -> None:
         """
         Добавляет лайк к отзыву о фильме.
         """
         try:
             await ReviewLikeModel(
-                review_id=review_id,
-                user_id=user_id,
+                review_id=UUID(review_id),
+                user_id=UUID(user_id),
             ).insert()
 
         except DuplicateKeyError as ex:
@@ -116,17 +117,17 @@ class ReviewsService:
 
     async def get_reviews(
         self,
-        film_id: uuid.UUID,
+        film_id: str,
         page_number: int = 1,
         page_size: int = 50,
-    ) -> list[dict[str, str]]:
+    ) -> list[FilmReviewModel]:
         """
         Возвращает список отзвов о фильме.
         """
         try:
             review_list = (
                 await FilmReviewModel.find(
-                    FilmReviewModel.film_id == UUID(str(film_id)),
+                    FilmReviewModel.film_id == UUID(film_id),
                 )
                 .skip((page_number - 1) * page_size)
                 .limit(page_size)

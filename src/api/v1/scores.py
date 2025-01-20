@@ -1,7 +1,6 @@
 import logging
 
-from fastapi import APIRouter, HTTPException, Path, status
-from fastapi.params import Depends
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 
 from schemas.scores import AddScore, AverageScore
 from services.score_service import FilmScoreService, get_film_score_service

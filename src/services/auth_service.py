@@ -48,7 +48,7 @@ def calc_diff(token: str) -> int:
         int: Разница в сек между временем истечения токена и текущим временем.
     """
     token_dict: dict = jwt.decode(token, options={"verify_signature": False})
-    issue_epoch = token_dict.get("exp")
+    issue_epoch = int(token_dict.get("exp", 0))
     diff = int(issue_epoch - time.time())
     return diff
 
