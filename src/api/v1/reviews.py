@@ -4,8 +4,8 @@ from fastapi import APIRouter, Body, Depends, Path, status
 
 from schemas.reviews import FilmReview, FilmReviewPost
 from services.review_service import ReviewsService, get_review_service
-from utils.token_helpers import get_user_id_from_access_token
 from utils.paginator import PaginateQueryParams
+from utils.token_helpers import get_user_id_from_access_token
 
 logger = logging.getLogger(__name__)
 
@@ -33,14 +33,16 @@ async def get_film_reviews(
     Получает отзывы о фильме по его id.
     Параметры:
         film_id: str - ID фильма
+        sort_field: str - имя поля для сортировки
     """
     film_reviews = await review_service.get_reviews(
         film_id,
+        sort_field="likes",
         page_number=paginate_params.page_number,
         page_size=paginate_params.page_size,
     )
 
-    return [FilmReview(**review.__dict__) for review in film_reviews]
+    return [FilmReview(**review) for review in film_reviews]
 
 
 @router.post(

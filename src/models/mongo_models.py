@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 
 from beanie import Document
 from pydantic import Field
-from pymongo import IndexModel, ASCENDING
+from pymongo import ASCENDING, IndexModel
 
 
 class FilmScoreModel(Document):

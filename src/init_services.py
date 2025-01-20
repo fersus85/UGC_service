@@ -36,7 +36,8 @@ async def init_mongo() -> None:
     try:
 
         mongo_client: AsyncIOMotorClient = AsyncIOMotorClient(
-            settings.MONGO_HOST
+            settings.MONGO_HOST,
+            uuidRepresentation="standard",
         )
 
         await init_beanie(

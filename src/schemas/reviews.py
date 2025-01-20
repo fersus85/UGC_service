@@ -14,6 +14,7 @@ class FilmReview(BaseModel):
     review_text: str
     film_score: int = Field(..., ge=1, le=10)
     created_at: datetime
+    likes: int
 
 
 class FilmReviewPost(BaseModel):

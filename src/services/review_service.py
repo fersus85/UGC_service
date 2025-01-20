@@ -1,3 +1,4 @@
+import logging
 from functools import lru_cache
 from uuid import UUID
 
@@ -9,6 +10,8 @@ from models.mongo_models import (
     FilmScoreModel,
     ReviewLikeModel,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class ReviewsService:
@@ -118,22 +121,44 @@ class ReviewsService:
     async def get_reviews(
         self,
         film_id: str,
+        sort_field: str = "likes",
         page_number: int = 1,
         page_size: int = 50,
     ) -> list[FilmReviewModel]:
         """
-        Возвращает список отзвов о фильме.
+        Возвращает список отзывов о фильме.
         """
         try:
-            review_list = (
-                await FilmReviewModel.find(
-                    FilmReviewModel.film_id == UUID(film_id),
-                )
-                .skip((page_number - 1) * page_size)
-                .limit(page_size)
-                .to_list()
-            )
+            review_list = await FilmReviewModel.aggregate(
+                [
+                    {"$match": {"film_id": UUID(film_id)}},
+                    {
+                        "$lookup": {
+                            "from": "review_likes",
+                            "localField": "_id",
+                            "foreignField": "review_id",
+                            "as": "likes",
+                        }
+                    },
+                    {
+                        "$project": {
+                            "id": "$_id",
+                            "film_id": "$film_id",
+                            "user_id": "$user_id",
+                            "review_text": "$review_text",
+                            "film_score": "$film_score",
+                            "created_at": "$created_at",
+                            "likes": {"$size": "$likes"},
+                        }
+                    },
+                    {"$sort": {sort_field: -1}},
+                    {"$skip": (page_number - 1) * page_size},
+                    {"$limit": page_size},
+                ]
+            ).to_list()
+
             return review_list
+
         except Exception as ex:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
