@@ -6,7 +6,7 @@ from exceptions.errors import UnauthorizedExc
 
 async def integrity_error_handler(
     _: Request,
-    __: Exception,
+    exc: Exception,
 ) -> Response:
     """Integrity error handler."""
     return JSONResponse(
@@ -19,7 +19,7 @@ async def integrity_error_handler(
 
 async def no_result_error_handler(
     _: Request,
-    __: Exception,
+    exc: Exception,
 ) -> Response:
     """No result error handler."""
     return JSONResponse(
@@ -32,7 +32,7 @@ async def no_result_error_handler(
 
 async def password_or_login_error_handler(
     _: Request,
-    __: Exception,
+    exc: Exception,
 ) -> Response:
     """Not valid password or login error handler"""
     return JSONResponse(
@@ -56,7 +56,7 @@ async def unauthorized_error_handler(
 
 async def no_result_error_400_handler(
     _: Request,
-    __: Exception,
+    exc: Exception,
 ) -> Response:
     """No result error handler"""
     return JSONResponse(

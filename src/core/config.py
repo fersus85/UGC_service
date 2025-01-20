@@ -3,6 +3,9 @@ from enum import Enum, auto
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+file_name = os.path.abspath(__file__)
+base_dir = os.path.dirname(os.path.dirname(file_name))
+
 
 class StrEnum(str, Enum):
     def _generate_next_value_(name, start, count, last_values):
@@ -19,7 +22,7 @@ class Settings(BaseSettings):
         env_file=".env", env_ignore_empty=True, extra="ignore"
     )
     PROJECT_NAME: str = "UGC2_Service"
-    BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    BASE_DIR: str = base_dir
     ENV: str = EnvMode.PROD
     REDIS_HOST: str = "redis"
     REDIS_PORT: int = 6379

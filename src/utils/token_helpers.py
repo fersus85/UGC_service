@@ -1,5 +1,5 @@
 import jwt
-from fastapi import Depends, Query, Request
+from fastapi import Depends, Request
 
 from exceptions.errors import UnauthorizedExc
 from services.auth_service import AuthService, get_auth_service
@@ -40,31 +40,3 @@ async def get_user_id_from_access_token(
         raise UnauthorizedExc("User ID not found")
 
     return user_id
-
-
-class PaginateQueryParams:
-    """
-    Класс для разделения ответов на страницы.
-    """
-
-    def __init__(
-        self,
-        page_number: int = Query(
-            1,
-            title="Page number.",
-            description="Номер страницы (начиная с 1)",
-            ge=1,
-        ),
-        page_size: int = Query(
-            50,
-            title="Page size.",
-            description="Количество записей на странице (от 1 до 100)",
-            ge=1,
-            le=100,
-        ),
-    ):
-        """
-        Инициализирует класс пагинации ответов.
-        """
-        self.page_number = page_number
-        self.page_size = page_size

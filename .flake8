@@ -1,0 +1,44 @@
+[flake8]
+max-complexity = 6
+inline-quotes = double
+max-line-length = 79
+extend-ignore = E203
+docstring_style = sphinx
+
+ignore =
+  ; Found `__init__.py` module with logic
+  WPS412,
+  ; Found string literal over-use
+  WPS226,
+  ; Found upper-case constant in a class
+  WPS115,
+  ; Found nested class: Settings
+  WPS431
+  ; Found too long ``try`` body
+  WPS229,
+  ; Found complex default value (for dependency injection)
+  WPS404,
+  ; Found regular name with trailing underscore
+  WPS120,
+  ; Found wrong variable name
+  WPS110,
+  ; Found incorrect node inside `class` body
+  WPS604,
+  ; Found underscored number name pattern
+  WPS114,
+  ; Found overly complex annotation
+  WPS234,
+  ; Found dotted raw import
+  WPS301,
+  ; Found inconsistent `return` statement
+  WPS324,
+  ; Found wrong keyword: pass
+  WPS420,
+  ; Found magic number: 50
+  WPS432,
+
+
+exclude =
+  ./.git,
+  ./venv,
+  

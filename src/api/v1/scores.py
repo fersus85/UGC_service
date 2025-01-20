@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, status
 
 from schemas.scores import AddScore, AverageScore
 from services.score_service import FilmScoreService, get_film_score_service
-from utils.helpers import get_user_id_from_access_token
+from utils.token_helpers import get_user_id_from_access_token
 
 logger = logging.getLogger(__name__)
 

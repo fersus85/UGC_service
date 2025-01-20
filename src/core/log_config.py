@@ -2,7 +2,7 @@ import json
 import logging.config
 import pathlib
 
-from .config import settings
+from core.config import settings
 
 
 def setup_logging() -> None:

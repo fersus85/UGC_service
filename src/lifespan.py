@@ -14,7 +14,6 @@ async def lifespan(app: FastAPI):
     Иницилизирует сервисы перед стартом
     приложения и зыкрывает соединения после
     """
-
     await init_casher()
     await init_mongo()
 

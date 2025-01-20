@@ -86,7 +86,7 @@ class AuthService:
         Raises:
             UnauthorizedError: Если токен недействителен или истек.
         """
-        cache_key = "def verify" + ":" + token
+        cache_key = f"def verify: {token}"
 
         is_valid = await self.cacher.get(cache_key)
         if is_valid is not None:

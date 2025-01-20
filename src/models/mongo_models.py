@@ -1,10 +1,9 @@
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
-import pymongo
 from beanie import Document
 from pydantic import Field
-from pymongo import IndexModel
+from pymongo import IndexModel, ASCENDING
 
 
 class FilmScoreModel(Document):
@@ -23,8 +22,8 @@ class FilmScoreModel(Document):
         indexes = [
             IndexModel(
                 [
-                    ("film_id", pymongo.ASCENDING),
-                    ("user_id", pymongo.ASCENDING),
+                    ("film_id", ASCENDING),
+                    ("user_id", ASCENDING),
                 ],
                 name="film_user_idx",
                 unique=True,
@@ -46,8 +45,8 @@ class FilmBookmarkModel(Document):
         indexes = [
             IndexModel(
                 [
-                    ("user_id", pymongo.ASCENDING),
-                    ("film_id", pymongo.ASCENDING),
+                    ("user_id", ASCENDING),
+                    ("film_id", ASCENDING),
                 ],
                 name="user_film_idx",
                 unique=True,
@@ -74,8 +73,8 @@ class FilmReviewModel(Document):
         indexes = [
             IndexModel(
                 [
-                    ("film_id", pymongo.ASCENDING),
-                    ("user_id", pymongo.ASCENDING),
+                    ("film_id", ASCENDING),
+                    ("user_id", ASCENDING),
                 ],
                 name="film_user_idx",
                 unique=True,
@@ -97,8 +96,8 @@ class ReviewLikeModel(Document):
         indexes = [
             IndexModel(
                 [
-                    ("review_id", pymongo.ASCENDING),
-                    ("film_id", pymongo.ASCENDING),
+                    ("review_id", ASCENDING),
+                    ("film_id", ASCENDING),
                 ],
                 name="review_user_idx",
                 unique=True,

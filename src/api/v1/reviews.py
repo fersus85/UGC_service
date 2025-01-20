@@ -4,7 +4,8 @@ from fastapi import APIRouter, Body, Depends, Path, status
 
 from schemas.reviews import FilmReview, FilmReviewPost
 from services.review_service import ReviewsService, get_review_service
-from utils.helpers import PaginateQueryParams, get_user_id_from_access_token
+from utils.token_helpers import get_user_id_from_access_token
+from utils.paginator import PaginateQueryParams
 
 logger = logging.getLogger(__name__)
 
