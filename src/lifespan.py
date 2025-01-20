@@ -24,7 +24,8 @@ async def lifespan(app: FastAPI):
         [f"{settings.MONGO_HOST}:{settings.MONGO_PORT}"]
     )
 
-    logger.info("App ready")
+    logger.info("App is ready")
     yield
+    logger.debug("Closing connections...")
     await mongo_storage.on_shutdown()
-    logger.debug("Closing connections")
+    

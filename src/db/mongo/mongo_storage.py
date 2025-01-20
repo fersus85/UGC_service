@@ -3,7 +3,7 @@ import logging
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from core.config import settings
-from db.mongo import mongo_rep  # type: ignore[attr-defined]
+from db.mongo import mongo_rep
 
 logger = logging.getLogger(__name__)
 
