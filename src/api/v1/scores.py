@@ -33,14 +33,7 @@ async def add_film_score(
         film_id: UUID - UUID фильма
         film_score: int - Оценка, от 0 до 10
     """
-    result = await score_service.add_score(
-        data.film_id, user_id, data.film_score
-    )
-    if not result:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="error when adding a record",
-        )
+    await score_service.add_score(data.film_id, user_id, data.film_score)
     return None
 
 
@@ -57,13 +50,12 @@ async def delete_film_score(
     user_id: str = Depends(get_user_id_from_access_token),
     score_service: FilmScoreService = Depends(get_film_score_service),
 ) -> None:
-    """Удаляет оценку фильма по его id."""
-    result = await score_service.delete_score(film_id, user_id)
-    if result is None or result == 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="error deleting a record",
-        )
+    """
+    Удаляет оценку к фильму по его ID.
+    Параметры:
+        film_id: UUID - UUID фильма
+    """
+    await score_service.delete_score(film_id, user_id)
     return None
 
 

@@ -5,6 +5,7 @@ from fastapi import Depends, HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
 from db.mongo import MongoRepository, get_mongo_repository
+from models.mongo_models import FilmBookmarkModel
 
 
 class BookmarksService:
@@ -19,46 +20,53 @@ class BookmarksService:
         self._mongo_repository = mongo_repository
         self.collection_name = "film_bookmarks"
 
-    async def get_bookmark_films(
-        self, user_id: UUID
-    ) -> list[dict[str, UUID]] | None:
+    async def get_bookmark_films(self, user_id: UUID) -> list[UUID] | None:
         """
         Возвращает список id фильмов, добавленных пользователем в закладки.
         """
-        films_bookmarks = await self._mongo_repository.find_all(
-            self.collection_name, {"user_id": str(user_id)}
-        )
-        if films_bookmarks:
-            return [film_obj.get("film_id") for film_obj in films_bookmarks]
-        return None
+        try:
+            bookmarks_list = await FilmBookmarkModel.find(
+                FilmBookmarkModel.user_id == UUID(user_id),
+            ).to_list()
+            return [bookmark.film_id for bookmark in bookmarks_list]
+        except Exception as ex:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"error finding film bookmarks: {ex}",
+            ) from ex
 
     async def add_film_to_bookmarks(
         self, film_id: UUID, user_id: UUID
-    ) -> str | None:
+    ) -> None:
         """
         Добавляет фильм в закладки.
         """
         try:
-            return await self._mongo_repository.insert_one(
-                self.collection_name,
-                {"film_id": str(film_id), "user_id": str(user_id)},
-            )
-        except DuplicateKeyError as er:
+            await FilmBookmarkModel(film_id=film_id, user_id=user_id).insert()
+        except DuplicateKeyError:
+            pass
+        except Exception as ex:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="the movie has already been added to bookmarks",
-            ) from er
+                detail=f"error while adding film bookmark: {ex}",
+            ) from ex
 
     async def delete_film_from_bookmarks(
         self, film_id: UUID, user_id: UUID
-    ) -> int | None:
+    ) -> None:
         """
         Удаляет фильм из закладок пользователя.
         """
-        return await self._mongo_repository.delete_one(
-            self.collection_name,
-            {"film_id": str(film_id), "user_id": str(user_id)},
-        )
+        try:
+            await FilmBookmarkModel.find_one(
+                FilmBookmarkModel.user_id == UUID(user_id),
+                FilmBookmarkModel.film_id == UUID(str(film_id)),
+            ).delete()
+        except Exception as ex:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"error while deleting film bookmark: {ex}",
+            ) from ex
 
 
 @lru_cache

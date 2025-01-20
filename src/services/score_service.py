@@ -1,10 +1,15 @@
+import logging
 import uuid
 from functools import lru_cache
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
 from db.mongo import MongoRepository, get_mongo_repository
+from models.mongo_models import FilmReviewModel, FilmScoreModel
+
+logger = logging.getLogger(__name__)
 
 
 class FilmScoreService:
@@ -20,50 +25,57 @@ class FilmScoreService:
         self.collection_name = "film_score"
 
     async def add_score(
-        self, film_id: uuid.UUID, user_id: uuid.UUID, film_score: int
-    ) -> dict[str, str]:
+        self, film_id: UUID, user_id: UUID, film_score: int
+    ) -> None:
         """
-        Добавляет оценку фильма.
+        Добавляет или обновляет оценку фильма.
         """
         try:
-            result = await self._mongo_repository.insert_one(
-                self.collection_name,
-                {
-                    "film_id": str(film_id),
-                    "user_id": str(user_id),
-                    "film_score": film_score,
-                },
+
+            await FilmScoreModel(
+                film_id=film_id, user_id=user_id, film_score=film_score
+            ).insert()
+
+        except DuplicateKeyError:
+            existing_film_score = await FilmScoreModel.find_one(
+                FilmScoreModel.user_id == UUID(user_id),
+                FilmScoreModel.film_id == UUID(str(film_id)),
             )
-            if result:
-                review = await self._mongo_repository.find_one(
-                    "film_reviews",
-                    {"film_id": str(film_id), "user_id": str(user_id)},
-                )
-                if review:
-                    await self._mongo_repository.update_one(
-                        "film_reviews",
-                        {"film_id": str(film_id), "user_id": str(user_id)},
-                        {"film_score": film_score},
-                    )
-            return result
-        except DuplicateKeyError as ex:
+            existing_film_score.film_score = film_score
+            await existing_film_score.save()
+
+        except Exception as ex:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="the score has already been added to film_score",
+                detail=f"error while adding film score: {ex}",
             ) from ex
+
+        existing_film_review = await FilmReviewModel.find_one(
+            FilmScoreModel.user_id == UUID(user_id),
+            FilmScoreModel.film_id == UUID(str(film_id)),
+        )
+        if existing_film_review:
+            existing_film_review.film_score = film_score
+            await existing_film_review.save()
 
     async def delete_score(
         self,
         film_id: uuid.UUID,
         user_id: uuid.UUID,
-    ) -> int | None:
+    ) -> None:
         """
         Удаляет оценку фильма.
         """
-        return await self._mongo_repository.delete_one(
-            collection_name=self.collection_name,
-            query={"film_id": str(film_id), "user_id": str(user_id)},
-        )
+        try:
+            await FilmScoreModel.find_one(
+                FilmScoreModel.user_id == UUID(user_id),
+                FilmScoreModel.film_id == UUID(str(film_id)),
+            ).delete()
+        except Exception as ex:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"error while deleting film score: {ex}",
+            ) from ex
 
     async def get_score(
         self,
@@ -72,17 +84,11 @@ class FilmScoreService:
         """
         Возвращает среднюю оценку фильма.
         """
-        film_scores = await self._mongo_repository.find_all(
-            collection_name=self.collection_name,
-            query={"film_id": str(film_id)},
-        )
-        if not film_scores:
-            return None
 
-        sum_score = sum(
-            float(film_score.get("film_score")) for film_score in film_scores
-        )
-        return sum_score / len(film_scores)
+        avg_score = await FilmScoreModel.find(
+            FilmScoreModel.film_id == UUID(str(film_id)),
+        ).avg(FilmScoreModel.film_score)
+        return avg_score
 
 
 @lru_cache

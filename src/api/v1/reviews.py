@@ -1,11 +1,13 @@
-import datetime
+import logging
 from uuid import UUID
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Body, Depends, Path, status
 
 from schemas.reviews import FilmReview, FilmReviewPost
 from services.review_service import ReviewsService, get_review_service
 from utils.helpers import PaginateQueryParams, get_user_id_from_access_token
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/reviews",
@@ -35,15 +37,8 @@ async def get_film_reviews(
         page_number=paginate_params.page_number,
         page_size=paginate_params.page_size,
     )
-    if not film_reviews:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="film reviews not found",
-        )
-    return [
-        FilmReview(review_id=str(review.get("_id")), **review)
-        for review in film_reviews
-    ]
+
+    return [FilmReview(**review.__dict__) for review in film_reviews]
 
 
 @router.post(
@@ -63,18 +58,12 @@ async def add_film_review(
     """
     Добавляет отзыв о фильме по его id.
     """
-    result = await review_service.add_review(
+    await review_service.add_review(
         film_id=film_id,
         review_text=film_review_data.review_text,
         user_id=user_id,
         film_score=film_review_data.film_score,
-        create_at=datetime.datetime.now(),
     )
-    if not result:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Error adding review.",
-        )
     return None
 
 
@@ -92,44 +81,23 @@ async def delete_film_review(
     """
     Удаляет отзыв о фильме по id отзыва.
     """
-    result = await review_service.delete_review(
-        user_id=user_id, review_id=review_id
-    )
-    if result is None or result == 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Error deleting review.",
-        )
+    await review_service.delete_review(user_id=user_id, review_id=review_id)
     return None
 
 
-@router.patch(
-    "/{review_id}",
-    response_model=FilmReview,
+@router.post(
+    "/{review_id}/like",
     status_code=status.HTTP_200_OK,
-    summary="Update review",
-    description="Изменить отзыв о фильме",
+    summary="Like review",
+    description="Лайкнуть отзыв о фильме",
 )
-async def edit_film_review(
+async def like_film_review(
     review_id: str,
-    review_update_data: FilmReviewPost,
     user_id: str = Depends(get_user_id_from_access_token),
     review_service: ReviewsService = Depends(get_review_service),
-) -> FilmReview:
+) -> None:
     """
-    Редактирует отзыв о фильме по id отзыва.
+    Добавляет лайк к отзыву о фильме по id отзыва.
     """
-    updated_review = await review_service.update_review(
-        user_id=user_id,
-        review_id=review_id,
-        new_review_text=review_update_data.review_text,
-        new_film_score=review_update_data.film_score,
-    )
-    if updated_review is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Error updating review.",
-        )
-    return FilmReview(
-        review_id=str(updated_review.get("_id")), **updated_review
-    )
+    await review_service.like_review(user_id=user_id, review_id=review_id)
+    return None
