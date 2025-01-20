@@ -2,10 +2,9 @@ import uuid
 from functools import lru_cache
 from uuid import UUID
 
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
-from db.mongo import MongoRepository, get_mongo_repository
 from models.mongo_models import (
     FilmReviewModel,
     FilmScoreModel,
@@ -18,12 +17,13 @@ class ReviewsService:
     Сервис для работы с отзывами фильмов в MongoDB.
     """
 
-    def __init__(self, mongo_repository: MongoRepository):
+    def __init__(
+        self,
+    ):
         """
         Инициализирует сервис отзывов.
         """
-        self._mongo_repository = mongo_repository
-        self.collection_name = "film_reviews"
+        pass
 
     async def add_review(
         self,
@@ -141,10 +141,8 @@ class ReviewsService:
 
 
 @lru_cache
-def get_review_service(
-    repository: MongoRepository = Depends(get_mongo_repository),
-) -> ReviewsService:
+def get_review_service() -> ReviewsService:
     """
     Возвращает экземпляр сервиса для работы с отзывами фильмов.
     """
-    return ReviewsService(repository)
+    return ReviewsService()

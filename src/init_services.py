@@ -6,7 +6,7 @@ from redis.asyncio import Redis
 
 import db.casher as cacher
 from core.config import settings
-from db import mongo, redis
+from db import redis
 from models.mongo_models import (
     FilmBookmarkModel,
     FilmReviewModel,
@@ -18,14 +18,20 @@ logger = logging.getLogger(__name__)
 
 
 async def init_casher():
+    """
+    Инициализация Redis Cache
+    """
     try:
         redis.redis = Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
         cacher.cacher = redis.RedisCache(redis.redis)
     except Exception as ex:
-        logger.exception(f"Error connecting to Redis: {ex}")
+        logger.exception("Error connecting to Redis: %s", ex)
 
 
 async def init_mongo():
+    """
+    Инициализация MongoDB посредством Beanie ODM
+    """
 
     try:
 
@@ -45,10 +51,8 @@ async def init_mongo():
             ],
         )
 
-        mongo.mongo_repository = mongo.MongoRepository(mongo_client)
-
         logger.info("Connected to MongoDB successfully.")
 
     except Exception as ex:
 
-        logger.exception(f"Error connecting to MongoDB: {ex}")
+        logger.exception("Error connecting to MongoDB: %s", ex)

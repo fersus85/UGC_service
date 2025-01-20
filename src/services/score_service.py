@@ -3,10 +3,9 @@ import uuid
 from functools import lru_cache
 from uuid import UUID
 
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
-from db.mongo import MongoRepository, get_mongo_repository
 from models.mongo_models import FilmReviewModel, FilmScoreModel
 
 logger = logging.getLogger(__name__)
@@ -17,12 +16,13 @@ class FilmScoreService:
     Сервис для работы с оценками фильмов в MongoDB.
     """
 
-    def __init__(self, mongo_repository: MongoRepository):
+    def __init__(
+        self,
+    ):
         """
         Инициализирует сервис оценок фильмов.
         """
-        self._mongo_repository = mongo_repository
-        self.collection_name = "film_score"
+        pass
 
     async def add_score(
         self, film_id: UUID, user_id: UUID, film_score: int
@@ -92,10 +92,8 @@ class FilmScoreService:
 
 
 @lru_cache
-def get_film_score_service(
-    repository: MongoRepository = Depends(get_mongo_repository),
-) -> FilmScoreService:
+def get_film_score_service() -> FilmScoreService:
     """
     Возвращает экземпляр сервиса для работы с оценками фильмов.
     """
-    return FilmScoreService(repository)
+    return FilmScoreService()

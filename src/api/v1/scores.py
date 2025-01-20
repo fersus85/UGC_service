@@ -1,5 +1,4 @@
 import logging
-from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Path, status
 from fastapi.params import Depends
@@ -30,7 +29,7 @@ async def add_film_score(
     """
     Добавляет оценку к фильму.
     Параметры:
-        film_id: UUID - UUID фильма
+        film_id: str - ID фильма
         film_score: int - Оценка, от 0 до 10
     """
     await score_service.add_score(data.film_id, user_id, data.film_score)
@@ -44,7 +43,7 @@ async def add_film_score(
     description="Удаляет оценку фильма",
 )
 async def delete_film_score(
-    film_id: UUID = Path(
+    film_id: str = Path(
         title="UUID фильма", example="3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ),
     user_id: str = Depends(get_user_id_from_access_token),
@@ -53,7 +52,7 @@ async def delete_film_score(
     """
     Удаляет оценку к фильму по его ID.
     Параметры:
-        film_id: UUID - UUID фильма
+        film_id: str - ID фильма
     """
     await score_service.delete_score(film_id, user_id)
     return None
@@ -61,12 +60,16 @@ async def delete_film_score(
 
 @router.get("/{film_id}", response_model=AverageScore)
 async def get_film_score(
-    film_id: UUID = Path(
+    film_id: str = Path(
         title="UUID фильма", example="3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ),
     score_service: FilmScoreService = Depends(get_film_score_service),
 ) -> AverageScore:
-    """Получает среднюю оценку фильма по его id."""
+    """
+    Получает среднюю оценку фильма по его id.
+    Параметры:
+        film_id: str - ID фильма
+    """
     average_score = await score_service.get_score(film_id)
     if average_score is None:
         raise HTTPException(

@@ -5,7 +5,9 @@ from pydantic import BaseModel, Field
 
 
 class FilmReview(BaseModel):
-    """Модель ответа пользователю о рецензии и оценке фильма."""
+    """
+    Модель ответа пользователю о рецензии и оценке фильма.
+    """
 
     id: UUID
     user_id: UUID
@@ -15,7 +17,9 @@ class FilmReview(BaseModel):
 
 
 class FilmReviewPost(BaseModel):
-    """Модель для добавления и обновления отзыва и оценки фильма."""
+    """
+    Модель для добавления и обновления отзыва и оценки фильма.
+    """
 
     review_text: str
     film_score: int = Field(..., ge=1, le=10)

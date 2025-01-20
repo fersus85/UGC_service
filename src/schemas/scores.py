@@ -1,10 +1,12 @@
-from uuid import UUID
-
 from pydantic import BaseModel, Field
 
 
 class AddScore(BaseModel):
-    film_id: UUID = Field(
+    """
+    Модель для добавления и обновления оценки фильма.
+    """
+
+    film_id: str = Field(
         ...,
         description="UUID фильма",
         example="3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -13,4 +15,8 @@ class AddScore(BaseModel):
 
 
 class AverageScore(BaseModel):
+    """
+    Модель для получения средней оценки фильма.
+    """
+
     average_score: float

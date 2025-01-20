@@ -8,5 +8,5 @@ logger = logging.getLogger(__name__)
 
 async def log_stuff(request: Request, call_next):
     response: Response = await call_next(request)
-    logger.info(f"{response.status_code} {request.method} {request.url}")
+    logger.info("%s %s %s", response.status_code, request.method, request.url)
     return response

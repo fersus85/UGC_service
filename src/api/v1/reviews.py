@@ -1,5 +1,4 @@
 import logging
-from uuid import UUID
 
 from fastapi import APIRouter, Body, Depends, Path, status
 
@@ -23,7 +22,7 @@ router = APIRouter(
     description="Список рецензий фильма",
 )
 async def get_film_reviews(
-    film_id: UUID = Path(
+    film_id: str = Path(
         title="UUID фильма", example="3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ),
     paginate_params: PaginateQueryParams = Depends(PaginateQueryParams),
@@ -31,6 +30,8 @@ async def get_film_reviews(
 ) -> list[FilmReview]:
     """
     Получает отзывы о фильме по его id.
+    Параметры:
+        film_id: str - ID фильма
     """
     film_reviews = await review_service.get_reviews(
         film_id,
@@ -48,7 +49,7 @@ async def get_film_reviews(
     description="Добавить отзыв о фильме",
 )
 async def add_film_review(
-    film_id: UUID = Path(
+    film_id: str = Path(
         title="UUID фильма", example="3fa85f64-5717-4562-b3fc-2c963f66afa6"
     ),
     film_review_data: FilmReviewPost = Body(),
@@ -57,6 +58,10 @@ async def add_film_review(
 ) -> None:
     """
     Добавляет отзыв о фильме по его id.
+    Параметры:
+        film_id: str - ID фильма
+        review_text: str - текст рецензии
+        film_score: int - оценка от 0 до 10
     """
     await review_service.add_review(
         film_id=film_id,
@@ -80,6 +85,8 @@ async def delete_film_review(
 ) -> None:
     """
     Удаляет отзыв о фильме по id отзыва.
+    Параметры:
+        review_id: str - ID отзыва
     """
     await review_service.delete_review(user_id=user_id, review_id=review_id)
     return None
@@ -98,6 +105,8 @@ async def like_film_review(
 ) -> None:
     """
     Добавляет лайк к отзыву о фильме по id отзыва.
+    Параметры:
+        review_id: str - ID отзыва
     """
     await review_service.like_review(user_id=user_id, review_id=review_id)
     return None

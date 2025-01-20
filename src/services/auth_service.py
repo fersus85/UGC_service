@@ -24,13 +24,9 @@ def verify_token(token: str) -> None:
     try:
         headers = {"Content-Type": "application/json"}
         json = {"access_token": token}
-
         response = requests.post(
             url=settings.AUTH_SERVICE_URL, headers=headers, json=json
         )
-
-        logger.info(f"response: {response}, content: {response.content}")
-
         response.raise_for_status()
     except requests.HTTPError as ex:
         logger.error("HTTPerror: %s", ex)

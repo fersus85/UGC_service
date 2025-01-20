@@ -1,10 +1,9 @@
 from functools import lru_cache
 from uuid import UUID
 
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
-from db.mongo import MongoRepository, get_mongo_repository
 from models.mongo_models import FilmBookmarkModel
 
 
@@ -13,12 +12,11 @@ class BookmarksService:
     Сервис для работы с закладками фильмов в MongoDB.
     """
 
-    def __init__(self, mongo_repository: MongoRepository) -> None:
+    def __init__(self) -> None:
         """
         Инициализирует сервис закладок фильмов.
         """
-        self._mongo_repository = mongo_repository
-        self.collection_name = "film_bookmarks"
+        pass
 
     async def get_bookmark_films(self, user_id: UUID) -> list[UUID] | None:
         """
@@ -70,10 +68,8 @@ class BookmarksService:
 
 
 @lru_cache
-def get_bookmark_service(
-    repository=Depends(get_mongo_repository),
-) -> BookmarksService:
+def get_bookmark_service() -> BookmarksService:
     """
     Возвращает экземпляр сервиса для работы с закладками фильмов.
     """
-    return BookmarksService(repository)
+    return BookmarksService()

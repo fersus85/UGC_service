@@ -8,6 +8,10 @@ from pymongo import IndexModel
 
 
 class FilmScoreModel(Document):
+    """
+    Модель таблицы с оценками фильмов.
+    """
+
     id: UUID = Field(default_factory=uuid4)
     film_id: UUID
     user_id: UUID
@@ -28,6 +32,10 @@ class FilmScoreModel(Document):
 
 
 class FilmBookmarkModel(Document):
+    """
+    Модель таблицы с пользовательскими закладками фильмов.
+    """
+
     id: UUID = Field(default_factory=uuid4)
     film_id: UUID
     user_id: UUID
@@ -46,26 +54,11 @@ class FilmBookmarkModel(Document):
         ]
 
 
-class ReviewLikeModel(Document):
-    id: UUID = Field(default_factory=uuid4)
-    review_id: UUID
-    user_id: UUID
-
-    class Settings:
-        name = "review_likes"
-        indexes = [
-            IndexModel(
-                [
-                    ("review_id", pymongo.ASCENDING),
-                    ("film_id", pymongo.ASCENDING),
-                ],
-                name="review_user_idx",
-                unique=True,
-            ),
-        ]
-
-
 class FilmReviewModel(Document):
+    """
+    Модель таблицы с пользовательскими отзывами на фильмы.
+    """
+
     id: UUID = Field(default_factory=uuid4)
     film_id: UUID
     user_id: UUID
@@ -84,6 +77,29 @@ class FilmReviewModel(Document):
                     ("user_id", pymongo.ASCENDING),
                 ],
                 name="film_user_idx",
+                unique=True,
+            ),
+        ]
+
+
+class ReviewLikeModel(Document):
+    """
+    Модель таблицы с лайками на отзывы.
+    """
+
+    id: UUID = Field(default_factory=uuid4)
+    review_id: UUID
+    user_id: UUID
+
+    class Settings:
+        name = "review_likes"
+        indexes = [
+            IndexModel(
+                [
+                    ("review_id", pymongo.ASCENDING),
+                    ("film_id", pymongo.ASCENDING),
+                ],
+                name="review_user_idx",
                 unique=True,
             ),
         ]

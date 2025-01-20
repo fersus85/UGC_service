@@ -3,7 +3,6 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from db import mongo
 from init_services import init_casher, init_mongo
 
 logger = logging.getLogger(__name__)
@@ -23,6 +22,4 @@ async def lifespan(app: FastAPI):
 
     yield
 
-    logger.debug("Closing connections...")
-
-    mongo.mongo_repository._mongo_client.close()
+    logger.debug("App is closing...")
