@@ -1,7 +1,7 @@
 import logging
 from functools import lru_cache
 from uuid import UUID
-
+from typing import Any
 from fastapi import HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
@@ -124,7 +124,7 @@ class ReviewsService:
         sort_field: str = "likes",
         page_number: int = 1,
         page_size: int = 50,
-    ) -> list[FilmReviewModel]:
+    ) -> list[dict[str, Any]]:
         """
         Возвращает список отзывов о фильме.
         """
