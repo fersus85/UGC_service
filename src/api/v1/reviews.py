@@ -58,7 +58,7 @@ async def add_film_review(
     film_review_data: FilmReviewPost = Body(),
     user_id: str = Depends(get_user_id_from_access_token),
     review_service: ReviewsService = Depends(get_review_service),
-) -> None:
+) -> int:
     """
     Добавляет отзыв о фильме по его id.
     Параметры:
@@ -85,7 +85,7 @@ async def delete_film_review(
     review_id: str,
     user_id: str = Depends(get_user_id_from_access_token),
     review_service: ReviewsService = Depends(get_review_service),
-) -> None:
+) -> int:
     """
     Удаляет отзыв о фильме по id отзыва.
     Параметры:
@@ -105,7 +105,7 @@ async def like_film_review(
     review_id: str,
     user_id: str = Depends(get_user_id_from_access_token),
     review_service: ReviewsService = Depends(get_review_service),
-) -> None:
+) -> int:
     """
     Добавляет лайк к отзыву о фильме по id отзыва.
     Параметры:

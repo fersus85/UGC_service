@@ -45,7 +45,7 @@ async def add_film_to_bookmark(
     ),
     user_id: str = Depends(get_user_id_from_access_token),
     bookmark_service: BookmarksService = Depends(get_bookmark_service),
-) -> None:
+) -> int:
     """
     Добавляет фильм в закладки
     Параметры:
@@ -69,7 +69,7 @@ async def delete_film_from_bookmark(
     ),
     user_id: str = Depends(get_user_id_from_access_token),
     bookmark_service: BookmarksService = Depends(get_bookmark_service),
-) -> None:
+) -> int:
     """
     Удаляет фильм из закладок
     Параметры:

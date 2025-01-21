@@ -24,7 +24,7 @@ async def add_film_score(
     data: AddScore,
     user_id: str = Depends(get_user_id_from_access_token),
     score_service: FilmScoreService = Depends(get_film_score_service),
-) -> None:
+) -> int:
     """
     Добавляет оценку к фильму.
     Параметры:
@@ -47,7 +47,7 @@ async def delete_film_score(
     ),
     user_id: str = Depends(get_user_id_from_access_token),
     score_service: FilmScoreService = Depends(get_film_score_service),
-) -> None:
+) -> int:
     """
     Удаляет оценку к фильму по его ID.
     Параметры:
