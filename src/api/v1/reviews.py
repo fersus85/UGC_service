@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import APIRouter, Body, Depends, Path, status
-
+from fastapi import APIRouter, Body, Depends, Path, status, HTTPException
+from pydantic import ValidationError
 from schemas.reviews import FilmReview, FilmReviewPost
 from services.review_service import ReviewsService, get_review_service
 from utils.paginator import PaginateQueryParams
@@ -42,7 +42,12 @@ async def get_film_reviews(
         page_size=paginate_params.page_size,
     )
 
-    return [FilmReview(**review) for review in film_reviews]
+    try:
+        film_review_list = [FilmReview(**review) for review in film_reviews]
+    except ValidationError:
+        raise HTTPException(status_code=400, detail="invalid data")
+    
+    return film_review_list
 
 
 @router.post(
