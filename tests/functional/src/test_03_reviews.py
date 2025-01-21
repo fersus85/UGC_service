@@ -1,8 +1,7 @@
 from http import HTTPStatus
-from typing import Any, Callable, Dict
+from typing import Any, Awaitable, Callable, Dict
 
 import pytest
-from aiohttp import ClientResponse
 from config import settings
 
 pytestmark = pytest.mark.asyncio
@@ -23,7 +22,7 @@ pytestmark = pytest.mark.asyncio
     ],
 )
 async def test_add_review(
-    make_post_request: Callable[[str, str, Dict[str, Any]], ClientResponse],
+    make_post_request: Callable[[str, Dict[str, Any]], Awaitable[Any]],
     post_body: Dict[str, Any],
     exp_status: HTTPStatus,
     exp_result: str | None,
@@ -54,7 +53,7 @@ async def test_add_review(
     ],
 )
 async def test_get_reviews(
-    make_get_request: Callable[[str, str, Dict[str, Any]], ClientResponse],
+    make_get_request: Callable[[str], Awaitable[Any]],
     post_body: Dict[str, Any],
     exp_status: HTTPStatus,
     exp_result: str | None,
@@ -71,8 +70,11 @@ async def test_get_reviews(
     body = await response.json()
     assert response.status == exp_status
     assert len(body) == 1
-    assert "created_at" in body[0]
-    assert "id" in body[0]
-    assert "film_score" in body[0]
-    assert "likes" in body[0]
-    assert body[0].get("film_score") == exp_result
+
+    first_review = body[0]
+
+    assert "created_at" in first_review
+    assert "id" in first_review
+    assert "film_score" in first_review
+    assert "likes" in first_review
+    assert first_review.get("film_score") == exp_result

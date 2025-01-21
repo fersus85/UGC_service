@@ -1,8 +1,7 @@
 from http import HTTPStatus
-from typing import Any, Callable, Dict
+from typing import Any, Awaitable, Callable, Dict
 
 import pytest
-from aiohttp import ClientResponse
 from config import settings
 
 pytestmark = pytest.mark.asyncio
@@ -23,7 +22,7 @@ pytestmark = pytest.mark.asyncio
     ],
 )
 async def test_add_score(
-    make_post_request: Callable[[str, str, Dict[str, Any]], ClientResponse],
+    make_post_request: Callable[[str, Dict[str, Any]], Awaitable[Any]],
     post_body: Dict[str, Any],
     exp_status: HTTPStatus,
     exp_result: str | None,
@@ -52,7 +51,7 @@ async def test_add_score(
     ],
 )
 async def test_get_scores(
-    make_get_request: Callable[[str, str, Dict[str, Any]], ClientResponse],
+    make_get_request: Callable[[str], Awaitable[Any]],
     post_body: Dict[str, Any],
     exp_status: HTTPStatus,
     exp_result: str | None,

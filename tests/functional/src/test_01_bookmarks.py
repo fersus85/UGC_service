@@ -1,8 +1,7 @@
 from http import HTTPStatus
-from typing import Any, Callable, Dict
+from typing import Any, Awaitable, Callable, Dict
 
 import pytest
-from aiohttp import ClientResponse
 from config import settings
 
 pytestmark = pytest.mark.asyncio
@@ -20,7 +19,7 @@ pytestmark = pytest.mark.asyncio
     ],
 )
 async def test_add_bookmark(
-    make_post_request: Callable[[str, str, Dict[str, Any]], ClientResponse],
+    make_post_request: Callable[[str, Dict[str, Any]], Awaitable[Any]],
     post_body: Dict[str, Any],
     exp_status: HTTPStatus,
     exp_result: str | None,
@@ -51,7 +50,7 @@ async def test_add_bookmark(
     ],
 )
 async def test_get_bookmarks(
-    make_get_request: Callable[[str, str, Dict[str, Any]], ClientResponse],
+    make_get_request: Callable[[str], Awaitable[Any]],
     post_body: Dict[str, Any],
     exp_status: HTTPStatus,
     exp_result: str | None,
@@ -79,7 +78,7 @@ async def test_get_bookmarks(
     ],
 )
 async def test_del_bookmarks(
-    make_delete_request: Callable[[str, str, Dict[str, Any]], ClientResponse],
+    make_delete_request: Callable[[str], Awaitable[Any]],
     post_body: Dict[str, Any],
     exp_status: HTTPStatus,
     exp_result: str | None,
@@ -109,7 +108,7 @@ async def test_del_bookmarks(
     ],
 )
 async def test_get_bookmarks_empty(
-    make_get_request: Callable[[str, str, Dict[str, Any]], ClientResponse],
+    make_get_request: Callable[[str], Awaitable[Any]],
     post_body: Dict[str, Any],
     exp_status: HTTPStatus,
     exp_result: str | None,

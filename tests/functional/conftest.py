@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, AsyncGenerator, Callable, Dict
+from typing import Any, AsyncGenerator, Callable, Coroutine, Dict
 
 import aiohttp
 import pytest_asyncio
@@ -37,7 +37,7 @@ async def aiohttp_client() -> AsyncGenerator[aiohttp.ClientSession, None]:
 @pytest_asyncio.fixture(name="make_get_request")
 def make_get_request(
     aiohttp_client: aiohttp.ClientSession,
-) -> Callable[[str, str], aiohttp.ClientResponse]:
+) -> Callable[[str], Coroutine[Any, Any, aiohttp.ClientResponse]]:
     """
     Фикстура, предоставляющая функцию для выполнения GET-запросов к сервису.
 
@@ -62,7 +62,9 @@ def make_get_request(
 @pytest_asyncio.fixture(name="make_post_request")
 def make_post_request(
     aiohttp_client: aiohttp.ClientSession,
-) -> Callable[[str, str], aiohttp.ClientResponse]:
+) -> Callable[
+    [str, dict[str, Any]], Coroutine[Any, Any, aiohttp.ClientResponse]
+]:
     async def inner(url: str, data: Dict[str, Any]) -> aiohttp.ClientResponse:
         return await aiohttp_client.post(url, json=data)
 
@@ -72,7 +74,7 @@ def make_post_request(
 @pytest_asyncio.fixture(name="make_put_request")
 def make_put_request(
     aiohttp_client: aiohttp.ClientSession,
-) -> Callable[[str, str], aiohttp.ClientResponse]:
+) -> Callable[[str, str], Coroutine[Any, Any, aiohttp.ClientResponse]]:
     async def inner(url: str, data: str) -> aiohttp.ClientResponse:
         return await aiohttp_client.post(url, json=data)
 
@@ -82,7 +84,7 @@ def make_put_request(
 @pytest_asyncio.fixture(name="make_delete_request")
 def make_delete_request(
     aiohttp_client: aiohttp.ClientSession,
-) -> Callable[[str, str], aiohttp.ClientResponse]:
+) -> Callable[[str], Coroutine[Any, Any, aiohttp.ClientResponse]]:
     async def inner(url: str) -> aiohttp.ClientResponse:
         return await aiohttp_client.delete(url)
 

@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Callable, Dict
+from typing import Any, Awaitable, Callable, Dict, List, Union
 
 import pytest
 from aiohttp import ClientResponse
@@ -25,10 +25,10 @@ pytestmark = pytest.mark.asyncio
     ],
 )
 async def test_signup(
-    make_post_request: Callable[[str, str, Dict[str, Any]], ClientResponse],
+    make_post_request: Callable[[str, Dict[str, Any]], Awaitable[Any]],
     post_body: Dict[str, Any],
-    exp_status: HTTPStatus,
-    exp_result: str | None,
+    exp_status: List[HTTPStatus],
+    exp_result: List[Union[str, None]],
 ) -> None:
     """
     Регистрируем первого пользователя.
@@ -62,7 +62,7 @@ async def test_signup(
     ],
 )
 async def test_login(
-    make_post_request: Callable[[str, str, Dict[str, Any]], ClientResponse],
+    make_post_request: Callable[[str, Dict[str, Any]], Awaitable[Any]],
     post_body: Dict[str, Any],
     exp_status: HTTPStatus,
     exp_result: str | None,
