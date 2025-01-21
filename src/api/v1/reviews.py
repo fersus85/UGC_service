@@ -46,7 +46,7 @@ async def get_film_reviews(
         film_review_list = [FilmReview(**review) for review in film_reviews]
     except ValidationError:
         raise HTTPException(status_code=400, detail="invalid data")
-    
+
     return film_review_list
 
 
