@@ -15,5 +15,5 @@ def setup_logging() -> None:
         config = json.load(f_in)
         try:
             logging.config.dictConfig(config)
-        except ValueError as ex:
+        except ValueError:
             pass
