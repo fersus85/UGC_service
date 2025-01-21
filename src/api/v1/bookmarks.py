@@ -54,12 +54,12 @@ async def add_film_to_bookmark(
 
     """
     await bookmark_service.add_film_to_bookmarks(film_id, user_id)
-    return None
+    return status.HTTP_201_CREATED
 
 
 @router.delete(
     "/{film_id}",
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete bookmark",
     description="Удаляет фильм из закладок",
 )
@@ -76,4 +76,4 @@ async def delete_film_from_bookmark(
         film_id: str - ID фильма
     """
     await bookmark_service.delete_film_from_bookmarks(film_id, user_id)
-    return None
+    return status.HTTP_204_NO_CONTENT

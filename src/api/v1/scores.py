@@ -16,7 +16,7 @@ router = APIRouter(
 
 @router.post(
     "/",
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_201_CREATED,
     summary="Add score",
     description="Добавляет оценку к фильму",
 )
@@ -32,12 +32,12 @@ async def add_film_score(
         film_score: int - Оценка, от 0 до 10
     """
     await score_service.add_score(data.film_id, user_id, data.film_score)
-    return None
+    return status.HTTP_201_CREATED
 
 
 @router.delete(
     "/{film_id}",
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete score",
     description="Удаляет оценку фильма",
 )
@@ -54,7 +54,7 @@ async def delete_film_score(
         film_id: str - ID фильма
     """
     await score_service.delete_score(film_id, user_id)
-    return None
+    return status.HTTP_204_NO_CONTENT
 
 
 @router.get("/{film_id}", response_model=AverageScore)

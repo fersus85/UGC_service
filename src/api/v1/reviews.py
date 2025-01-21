@@ -72,12 +72,12 @@ async def add_film_review(
         user_id=user_id,
         film_score=film_review_data.film_score,
     )
-    return None
+    return status.HTTP_201_CREATED
 
 
 @router.delete(
     "/{review_id}",
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete review",
     description="Удалить отзыв о фильме",
 )
@@ -92,7 +92,7 @@ async def delete_film_review(
         review_id: str - ID отзыва
     """
     await review_service.delete_review(user_id=user_id, review_id=review_id)
-    return None
+    return status.HTTP_204_NO_CONTENT
 
 
 @router.post(
@@ -112,4 +112,4 @@ async def like_film_review(
         review_id: str - ID отзыва
     """
     await review_service.like_review(user_id=user_id, review_id=review_id)
-    return None
+    return status.HTTP_200_OK
