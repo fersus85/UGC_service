@@ -43,24 +43,24 @@ async def add_film_score(
 )
 async def delete_film_score(
     film_id: str = Path(
-        title="UUID фильма", example="3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        title="UUID фильма", examples=["3fa85f64-5717-4562-b3fc-2c963f66afa6"]
     ),
     user_id: str = Depends(get_user_id_from_access_token),
     score_service: FilmScoreService = Depends(get_film_score_service),
-) -> int:
+) -> None:
     """
     Удаляет оценку к фильму по его ID.
     Параметры:
         film_id: str - ID фильма
     """
     await score_service.delete_score(film_id, user_id)
-    return status.HTTP_204_NO_CONTENT
+    return None
 
 
 @router.get("/{film_id}", response_model=AverageScore)
 async def get_film_score(
     film_id: str = Path(
-        title="UUID фильма", example="3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        title="UUID фильма", examples=["3fa85f64-5717-4562-b3fc-2c963f66afa6"]
     ),
     score_service: FilmScoreService = Depends(get_film_score_service),
 ) -> AverageScore:
