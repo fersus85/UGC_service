@@ -2,8 +2,6 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from tests.init_client import client
-
 pytestmark = pytest.mark.asyncio
 
 
@@ -11,7 +9,7 @@ pytestmark = pytest.mark.asyncio
     "services.score_service.FilmScoreService.get_score",
     new_callable=AsyncMock,
 )
-async def test_get_score(get_score: AsyncMock):
+async def test_get_score(get_score: AsyncMock, client):
     """
     Получение средней оценки фильма.
     """
@@ -30,7 +28,7 @@ async def test_get_score(get_score: AsyncMock):
     "services.score_service.FilmScoreService.add_score",
     new_callable=AsyncMock,
 )
-async def test_add_score(add_score: AsyncMock):
+async def test_add_score(add_score: AsyncMock, client):
     """
     Добавление оценки фильма.
     """
@@ -52,7 +50,7 @@ async def test_add_score(add_score: AsyncMock):
     "services.score_service.FilmScoreService.delete_score",
     new_callable=AsyncMock,
 )
-async def test_del_score(delete_score: AsyncMock):
+async def test_del_score(delete_score: AsyncMock, client):
     """
     Удаление оценки фильма.
     """

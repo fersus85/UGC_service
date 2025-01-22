@@ -2,8 +2,6 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from tests.init_client import client
-
 pytestmark = pytest.mark.asyncio
 
 
@@ -11,7 +9,7 @@ pytestmark = pytest.mark.asyncio
     "services.review_service.ReviewsService.get_reviews",
     new_callable=AsyncMock,
 )
-async def test_get_reviews(get_reviews: AsyncMock):
+async def test_get_reviews(get_reviews: AsyncMock, client):
     """
     Получение списка рецензий фильма.
     """
@@ -50,7 +48,7 @@ async def test_get_reviews(get_reviews: AsyncMock):
     "services.review_service.ReviewsService.get_reviews",
     new_callable=AsyncMock,
 )
-async def test_get_reviews_invalid_data(get_reviews: AsyncMock):
+async def test_get_reviews_invalid_data(get_reviews: AsyncMock, client):
     """
     Получение списка рецензий фильма - неверный формат данных из хранилища.
     """
@@ -79,7 +77,7 @@ async def test_get_reviews_invalid_data(get_reviews: AsyncMock):
     "services.review_service.ReviewsService.add_review",
     new_callable=AsyncMock,
 )
-async def test_add_review(add_review: AsyncMock):
+async def test_add_review(add_review: AsyncMock, client):
     """
     Добавление рецензии к фильму.
     """
@@ -100,7 +98,7 @@ async def test_add_review(add_review: AsyncMock):
     "services.review_service.ReviewsService.like_review",
     new_callable=AsyncMock,
 )
-async def test_like_review(like_review: AsyncMock):
+async def test_like_review(like_review: AsyncMock, client):
     """
     Лайк рецензии.
     """
@@ -121,7 +119,7 @@ async def test_like_review(like_review: AsyncMock):
     "services.review_service.ReviewsService.delete_review",
     new_callable=AsyncMock,
 )
-async def test_delete_review(delete_review: AsyncMock):
+async def test_delete_review(delete_review: AsyncMock, client):
     """
     Удаление рецензии.
     """

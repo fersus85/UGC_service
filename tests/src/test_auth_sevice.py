@@ -1,23 +1,8 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
-from db.redis import RedisCache
-from services.auth_service import AuthService
-
 pytestmark = pytest.mark.asyncio
-
-
-@pytest.fixture
-def mock_cacher():
-    """Создает мок для объекта Cache."""
-    return MagicMock(spec=RedisCache)
-
-
-@pytest.fixture
-def auth_service(mock_cacher):
-    """Создает экземпляр AuthService с замоканным cacher."""
-    return AuthService(cacher=mock_cacher)
 
 
 @patch("services.auth_service.verify_token")

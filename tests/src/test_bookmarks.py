@@ -2,8 +2,6 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from tests.init_client import client
-
 pytestmark = pytest.mark.asyncio
 
 
@@ -11,7 +9,7 @@ pytestmark = pytest.mark.asyncio
     "services.bookmark_service.BookmarksService.get_bookmark_films",
     new_callable=AsyncMock,
 )
-async def test_get_bookmarks(get_bookmark_films: AsyncMock):
+async def test_get_bookmarks(get_bookmark_films: AsyncMock, client):
     """
     Получение списка фильмов в закладках пользователя.
     """
@@ -30,7 +28,7 @@ async def test_get_bookmarks(get_bookmark_films: AsyncMock):
     "services.bookmark_service.BookmarksService.add_film_to_bookmarks",
     new_callable=AsyncMock,
 )
-async def test_add_bookmark(add_bookmark_films: AsyncMock):
+async def test_add_bookmark(add_bookmark_films: AsyncMock, client):
     """
     Добавление фильма в закладки пользователя.
     """
@@ -51,7 +49,7 @@ async def test_add_bookmark(add_bookmark_films: AsyncMock):
     "services.bookmark_service.BookmarksService.delete_film_from_bookmarks",
     new_callable=AsyncMock,
 )
-async def test_del_bookmark(del_bookmark_films: AsyncMock):
+async def test_del_bookmark(del_bookmark_films: AsyncMock, client):
     """
     Удаление фильма из закладок пользователя.
     """
