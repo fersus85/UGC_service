@@ -1,6 +1,6 @@
 import random
 import time
-from typing import Dict
+from typing import Dict, List, Any
 
 from bson import ObjectId
 from pymongo.synchronous.database import Database
@@ -20,7 +20,7 @@ def measure_user_favorites(db: Database, user_id: ObjectId) -> float:
 
 def measure_movie_average_rating(db: Database, movie_id: ObjectId) -> float:
     start_time = time.perf_counter()
-    pipeline = [
+    pipeline: List[Dict[str, Any]] = [
         {"$match": {"movie_id": movie_id}},
         {"$group": {"_id": None, "avg_rating": {"$avg": "$rating"}}}
     ]

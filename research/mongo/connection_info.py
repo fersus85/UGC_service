@@ -8,9 +8,9 @@ from pymongo.synchronous.database import Database
 load_dotenv()
 
 dsl = {
-    "dbname": os.getenv("MONGO_DBNAME"),
-    "host": os.getenv("MONGO_HOST"),
-    "port": os.getenv("MONGO_PORT"),
+    "dbname": os.getenv("MONGO_DBNAME", "moviesDB"),
+    "host": os.getenv("MONGO_HOST", "localhost"),
+    "port": os.getenv("MONGO_PORT", "27017"),
 }
 
 
@@ -19,6 +19,6 @@ def get_mongo_db(dsl: Dict) -> Database:
     port = dsl.get('port', '27017')
 
     mongo_uri = f"mongodb://{host}:{port}/"
-    client = MongoClient(mongo_uri)
+    client: MongoClient = MongoClient(mongo_uri)
 
     return client[dsl.get("database", "moviesDB")]

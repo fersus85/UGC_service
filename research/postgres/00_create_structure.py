@@ -1,12 +1,12 @@
-from typing import Dict
+from typing import Dict, cast, Any
 
 import psycopg
 
 from postgres.connection_info import dsl
 
 
-def initialize_db(dsl: Dict[str, str]):
-    with psycopg.connect(**dsl) as conn:
+def initialize_db(dsl: Dict[str, str | None]):
+    with psycopg.connect(**cast(Any, dsl)) as conn:
         with conn.cursor() as cur:
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS users (
