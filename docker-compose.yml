@@ -1,0 +1,52 @@
+name: UGC2-Service
+
+services:
+
+  redis-ugc2:
+    image: redis:7.4.1
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - ./redisdata:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - auth_network
+
+  fastapi-ugc2:
+    build:
+      context: .
+    image: fastapi
+    healthcheck:
+      test: curl -s http://fastapi-ugc2:8000/api/openapi >/dev/null || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: always
+    depends_on:
+      redis-ugc2:
+        condition: service_healthy
+    networks:
+      - auth_network
+
+  nginx-ugc2:
+    image: nginx:1.27.2
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/localhost.crt:/etc/nginx/localhost.crt:ro
+      - ./nginx/localhost.key:/etc/nginx/localhost.key:ro
+    ports:
+      - "82:80"
+      - "442:443"
+    depends_on:
+      fastapi-ugc2:
+        condition: service_healthy
+    restart: always
+    networks:
+      - auth_network
+
+networks:
+  auth_network:
+    external: true

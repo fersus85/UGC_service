@@ -1,7 +1,9 @@
 [flake8]
-max-local-variables = 10
-max-public-attributes = 10
-max-try-body-length = 2
+max-complexity = 6
+inline-quotes = double
+max-line-length = 79
+extend-ignore = E203
+docstring_style = sphinx
 
 ignore =
   ; Found `__init__.py` module with logic
@@ -34,3 +36,9 @@ ignore =
   WPS420,
   ; Found magic number: 50
   WPS432,
+
+
+exclude =
+  ./.git,
+  ./venv,
+  
