@@ -47,14 +47,13 @@ async def delete_film_score(
     ),
     user_id: str = Depends(get_user_id_from_access_token),
     score_service: FilmScoreService = Depends(get_film_score_service),
-) -> int:
+) -> None:
     """
     Удаляет оценку к фильму по его ID.
     Параметры:
         film_id: str - ID фильма
     """
     await score_service.delete_score(film_id, user_id)
-    return status.HTTP_204_NO_CONTENT
 
 
 @router.get("/{film_id}", response_model=AverageScore)

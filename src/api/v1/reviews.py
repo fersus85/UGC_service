@@ -85,14 +85,13 @@ async def delete_film_review(
     review_id: str,
     user_id: str = Depends(get_user_id_from_access_token),
     review_service: ReviewsService = Depends(get_review_service),
-) -> int:
+) -> None:
     """
     Удаляет отзыв о фильме по id отзыва.
     Параметры:
         review_id: str - ID отзыва
     """
     await review_service.delete_review(user_id=user_id, review_id=review_id)
-    return status.HTTP_204_NO_CONTENT
 
 
 @router.post(
@@ -105,7 +104,7 @@ async def like_film_review(
     review_id: str,
     user_id: str = Depends(get_user_id_from_access_token),
     review_service: ReviewsService = Depends(get_review_service),
-) -> int:
+):
     """
     Добавляет лайк к отзыву о фильме по id отзыва.
     Параметры:

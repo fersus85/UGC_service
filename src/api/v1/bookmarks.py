@@ -69,11 +69,10 @@ async def delete_film_from_bookmark(
     ),
     user_id: str = Depends(get_user_id_from_access_token),
     bookmark_service: BookmarksService = Depends(get_bookmark_service),
-) -> int:
+) -> None:
     """
     Удаляет фильм из закладок
     Параметры:
         film_id: str - ID фильма
     """
     await bookmark_service.delete_film_from_bookmarks(film_id, user_id)
-    return status.HTTP_204_NO_CONTENT
