@@ -28,3 +28,5 @@ redisdata
 auth_pg_data
 
 mongo/data/
+
+esdata
