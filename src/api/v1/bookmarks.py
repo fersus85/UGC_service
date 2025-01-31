@@ -41,7 +41,7 @@ async def get_film_bookmarks(
 )
 async def add_film_to_bookmark(
     film_id: str = Path(
-        title="ID фильма", example="3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        title="ID фильма", examples=["3fa85f64-5717-4562-b3fc-2c963f66afa6"]
     ),
     user_id: str = Depends(get_user_id_from_access_token),
     bookmark_service: BookmarksService = Depends(get_bookmark_service),
@@ -65,7 +65,7 @@ async def add_film_to_bookmark(
 )
 async def delete_film_from_bookmark(
     film_id: str = Path(
-        title="UUID фильма", example="3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        title="UUID фильма", examples=["3fa85f64-5717-4562-b3fc-2c963f66afa6"]
     ),
     user_id: str = Depends(get_user_id_from_access_token),
     bookmark_service: BookmarksService = Depends(get_bookmark_service),
@@ -76,3 +76,4 @@ async def delete_film_from_bookmark(
         film_id: str - ID фильма
     """
     await bookmark_service.delete_film_from_bookmarks(film_id, user_id)
+    return None
