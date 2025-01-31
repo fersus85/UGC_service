@@ -4,6 +4,7 @@ import os
 import sentry_sdk
 import fastapi
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
 from api import router as api_router
 from core.config import settings
@@ -42,7 +43,7 @@ app = fastapi.FastAPI(
 app.middleware("http")(log_stuff)
 
 app.add_middleware(
-    fastapi.middleware.cors.CORSMiddleware,
+    CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
