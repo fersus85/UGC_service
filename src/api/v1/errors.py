@@ -13,4 +13,5 @@ router = APIRouter(
     description="Демонстрация ошибки деления на ноль",
 )
 async def get_film_bookmarks() -> None:
-    1 / 0
+    1 / 0  # noqa: WPS344
+    return None
