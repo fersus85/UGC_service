@@ -25,6 +25,8 @@ services:
       timeout: 5s
       retries: 10
     restart: always
+    volumes:
+      - fastapi_log_volume:/app/logs/
     depends_on:
       redis-ugc2:
         condition: service_healthy
@@ -37,6 +39,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/localhost.crt:/etc/nginx/localhost.crt:ro
       - ./nginx/localhost.key:/etc/nginx/localhost.key:ro
+      - nginx_log_volume:/var/log/nginx
     ports:
       - "82:80"
       - "442:443"
@@ -46,6 +49,22 @@ services:
     restart: always
     networks:
       - auth_network
+
+  filebeat-ugc2:
+    image: elastic/filebeat:8.16.3
+    volumes:
+      - ./deploy/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - fastapi_log_volume:/var/log/fastapi
+      - nginx_log_volume:/var/log/nginx
+    depends_on:
+      fastapi-ugc2:
+        condition: service_healthy
+    networks:
+      - auth_network
+
+volumes:
+  fastapi_log_volume:
+  nginx_log_volume:
 
 networks:
   auth_network:

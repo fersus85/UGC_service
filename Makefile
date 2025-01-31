@@ -5,7 +5,7 @@ BLACK_LINE_LENGTH = --line-length 79
 SRC_DIR = src
 TEST_PATH = $(CURDIR)/tests
 MONGO_COMPOSE_PATH = $(CURDIR)/docker-compose-mongodb.yml
-
+ELK_COMPOSE_PATH = $(CURDIR)/deploy/docker-compose-elk.yml
 
 all: up
 
@@ -35,6 +35,11 @@ init-mongo:
 down-mongo:
 	@echo "Остановка кластера MongoDB..."
 	@docker compose -f $(MONGO_COMPOSE_PATH) down
+
+# Запуск ELK
+up-elk:
+	@echo "Запуск ELK..."
+	@docker compose -f $(ELK_COMPOSE_PATH) up -d --build
 
 # Установка зависимостей продакшен
 install:
@@ -74,5 +79,6 @@ help:
 	@echo "  make install             - Установка зависимостей prod"
 	@echo "  make install-dev         - Установка зависимостей dev"
 	@echo "  make lint                - Запуск линтера"
+	@echo "  make up-elk              - Запуск ELK"
 	@echo "  make format              - Автоформатирование кода"
 	@echo "  make test                - Запуск тестов"
