@@ -1,7 +1,7 @@
 import logging
 
-from fastapi import APIRouter, Body, Depends, Path, status
-
+from fastapi import APIRouter, Body, Depends, Path, status, HTTPException
+from pydantic import ValidationError
 from schemas.reviews import FilmReview, FilmReviewPost
 from services.review_service import ReviewsService, get_review_service
 from utils.paginator import PaginateQueryParams
@@ -24,7 +24,7 @@ router = APIRouter(
 )
 async def get_film_reviews(
     film_id: str = Path(
-        title="UUID фильма", example="3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        title="UUID фильма", examples=["3fa85f64-5717-4562-b3fc-2c963f66afa6"]
     ),
     paginate_params: PaginateQueryParams = Depends(PaginateQueryParams),
     review_service: ReviewsService = Depends(get_review_service),
@@ -42,7 +42,12 @@ async def get_film_reviews(
         page_size=paginate_params.page_size,
     )
 
-    return [FilmReview(**review) for review in film_reviews]
+    try:
+        film_review_list = [FilmReview(**review) for review in film_reviews]
+    except ValidationError:
+        raise HTTPException(status_code=400, detail="invalid data")
+
+    return film_review_list
 
 
 @router.post(
@@ -53,7 +58,7 @@ async def get_film_reviews(
 )
 async def add_film_review(
     film_id: str = Path(
-        title="UUID фильма", example="3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        title="UUID фильма", examples=["3fa85f64-5717-4562-b3fc-2c963f66afa6"]
     ),
     film_review_data: FilmReviewPost = Body(),
     user_id: str = Depends(get_user_id_from_access_token),
@@ -85,14 +90,14 @@ async def delete_film_review(
     review_id: str,
     user_id: str = Depends(get_user_id_from_access_token),
     review_service: ReviewsService = Depends(get_review_service),
-) -> int:
+) -> None:
     """
     Удаляет отзыв о фильме по id отзыва.
     Параметры:
         review_id: str - ID отзыва
     """
     await review_service.delete_review(user_id=user_id, review_id=review_id)
-    return status.HTTP_204_NO_CONTENT
+    return None
 
 
 @router.post(
