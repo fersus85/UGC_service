@@ -1,10 +1,9 @@
-import logging, os
+import logging
+import os
 
 import sentry_sdk
+import fastapi
 from dotenv import load_dotenv
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import ORJSONResponse
 
 from api import router as api_router
 from core.config import settings
@@ -28,7 +27,7 @@ sentry_sdk.init(
 )
 
 
-app = FastAPI(
+app = fastapi.FastAPI(
     title=settings.PROJECT_NAME,
     description="Auth movies service",
     version="1.0.0",
@@ -36,14 +35,14 @@ app = FastAPI(
     exception_handlers=exception_handlers,
     docs_url="/api/openapi",
     openapi_url="/api/openapi.json",
-    default_response_class=ORJSONResponse,
+    default_response_class=fastapi.responses.ORJSONResponse,
 )
 
 
 app.middleware("http")(log_stuff)
 
 app.add_middleware(
-    CORSMiddleware,
+    fastapi.middleware.cors.CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
