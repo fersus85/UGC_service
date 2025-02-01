@@ -42,7 +42,9 @@ def transform_movie(doc: Dict) -> None:
     if "id" in doc:
         doc["_id"] = doc.pop("id")
     if isinstance(doc.get("creation_date"), datetime.date):
-        doc["creation_date"] = datetime.datetime.combine(doc["creation_date"], datetime.time.min)
+        doc["creation_date"] = datetime.datetime.combine(
+            doc["creation_date"], datetime.time.min
+        )
     if "created" not in doc:
         doc["created"] = datetime.datetime.now(datetime.timezone.utc)
     if "modified" not in doc:
@@ -70,7 +72,13 @@ def insert_data(
         "review_likes": (data["review_likes_data"], transform_with_id),
     }
     for collection_name, (documents, transform_func) in to_insert.items():
-        batch_insert(db, collection_name, documents, batch_size, transform_func)
+        batch_insert(
+            db,
+            collection_name,
+            documents,
+            batch_size,
+            transform_func
+        )
 
 
 if __name__ == "__main__":

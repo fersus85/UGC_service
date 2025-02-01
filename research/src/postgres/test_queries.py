@@ -20,7 +20,10 @@ def measure_user_favorites(conn: psycopg.Connection, user_id: str) -> float:
     return end_time - start_time
 
 
-def measure_movie_average_rating(conn: psycopg.Connection, movie_id: str) -> float:
+def measure_movie_average_rating(
+        conn: psycopg.Connection,
+        movie_id: str
+) -> float:
     start_time = time.perf_counter()
     with conn.cursor() as cur:
         cur.execute(
@@ -48,19 +51,37 @@ def test_queries(dsl: Dict, iterations: int = 100) -> None:
         random_user_ids = random.choices(all_user_ids, k=iterations)
         random_movie_ids = random.choices(all_movie_ids, k=iterations)
 
-        total_time_fav = sum(measure_user_favorites(conn, user_id) for user_id in random_user_ids)
+        total_time_fav = sum(
+            measure_user_favorites(conn, user_id)
+            for user_id in random_user_ids
+        )
         avg_time_fav = total_time_fav / iterations
 
-        total_time_rating = sum(measure_movie_average_rating(conn, movie_id) for movie_id in random_movie_ids)
+        total_time_rating = sum(
+            measure_movie_average_rating(conn, movie_id)
+            for movie_id in random_movie_ids
+        )
         avg_time_rating = total_time_rating / iterations
 
         logging.info("Сценарий «список закладок»:")
-        logging.info("  Общее время: %s", total_time_fav)
-        logging.info("  Среднее время на один запрос: %s", avg_time_fav)
+        logging.info(
+            "  Общее время: %s",
+            total_time_fav
+        )
+        logging.info(
+            "  Среднее время на один запрос: %s",
+            avg_time_fav
+        )
 
         logging.info("Сценарий «средняя оценка фильма»:")
-        logging.info("  Общее время: %s", total_time_rating)
-        logging.info("  Среднее время на один запрос: %s", avg_time_rating)
+        logging.info(
+            "  Общее время: %s",
+            total_time_rating
+        )
+        logging.info(
+            "  Среднее время на один запрос: %s",
+            avg_time_rating
+        )
 
 
 if __name__ == "__main__":
