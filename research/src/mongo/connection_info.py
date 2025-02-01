@@ -17,4 +17,4 @@ def get_mongo_db(dsl: Dict) -> Database:
     mongo_uri = dsl.get("mongo_uri")
     client: MongoClient = MongoClient(mongo_uri)
 
-    return client[dsl.get("database", "moviesDB")]
+    return client[dsl.get("database", dsl.get("dbname"))]
