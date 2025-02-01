@@ -35,7 +35,7 @@ def transform_with_id(doc: Dict) -> None:
     if "id" in doc:
         doc["_id"] = doc.pop("id")
     if "created_at" not in doc:
-        doc["created_at"] = datetime.datetime.now(datetime.UTC)
+        doc["created_at"] = datetime.datetime.now(datetime.timezone.utc)
 
 
 def transform_movie(doc: Dict) -> None:
@@ -44,14 +44,14 @@ def transform_movie(doc: Dict) -> None:
     if isinstance(doc.get("creation_date"), datetime.date):
         doc["creation_date"] = datetime.datetime.combine(doc["creation_date"], datetime.time.min)
     if "created" not in doc:
-        doc["created"] = datetime.datetime.now(datetime.UTC)
+        doc["created"] = datetime.datetime.now(datetime.timezone.utc)
     if "modified" not in doc:
         doc["modified"] = doc["created"]
 
 
 def transform_timestamp(doc: Dict) -> None:
     if "created_at" not in doc:
-        doc["created_at"] = datetime.datetime.now(datetime.UTC)
+        doc["created_at"] = datetime.datetime.now(datetime.timezone.utc)
 
 
 def insert_data(
