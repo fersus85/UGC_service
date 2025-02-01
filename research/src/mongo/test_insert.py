@@ -1,18 +1,16 @@
 import datetime
 import time
+import logging
 from typing import List, Dict
 
-from mongo.connection_info import dsl, get_mongo_db
+from mongo.connection_info import mongo_dsl, get_mongo_db
 from utils.data_generation import generate_data, IDType
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
 
 def insert_data(
-        user_data: List[Dict],
-        movie_data: List[Dict],
-        rating_data: List[Dict],
-        favorite_data: List[Dict],
-        review_data: List[Dict],
-        review_likes_data: List[Dict],
+        data: Dict[str, List[Dict]],
         dsl: Dict,
         batch_size: int = 5000
 ) -> None:
@@ -26,9 +24,9 @@ def insert_data(
         collection = db[collection_name]
         total_docs = len(documents)
 
-        insertion_time = 0.0
-        for i in range(0, total_docs, batch_size):
-            chunk = documents[i: i + batch_size]
+        insertion_time = float(0)
+        for start_index in range(0, total_docs, batch_size):
+            chunk = documents[start_index: start_index + batch_size]
             if transform_func:
                 for doc in chunk:
                     transform_func(doc)
@@ -37,9 +35,9 @@ def insert_data(
             collection.insert_many(chunk, ordered=False)
             end_send = time.perf_counter()
 
-            insertion_time += (end_send - start_send)
+            insertion_time += end_send - start_send
 
-        print(f"Вставка в {collection_name} заняла: {insertion_time}")
+        logging.info(f"Вставка в {collection_name} заняла: {insertion_time}")
 
     def transform_user(doc: Dict) -> None:
         if "id" in doc:
@@ -62,22 +60,22 @@ def insert_data(
         if "modified" not in doc:
             doc["modified"] = doc["created"]
 
-    def transform_rating(doc: Dict):
+    def transform_rating(doc: Dict) -> None:
         if "created_at" not in doc:
             doc["created_at"] = datetime.datetime.now(datetime.UTC)
 
-    def transform_favorite(doc: Dict):
+    def transform_favorite(doc: Dict) -> None:
         if "created_at" not in doc:
             doc["created_at"] = datetime.datetime.now(datetime.UTC)
 
-    def transform_review(doc: Dict):
+    def transform_review(doc: Dict) -> None:
         if "id" in doc:
             doc["_id"] = doc.pop("id")
 
         if "created_at" not in doc:
             doc["created_at"] = datetime.datetime.now(datetime.UTC)
 
-    def transform_review_like(doc: Dict):
+    def transform_review_like(doc: Dict) -> None:
         if "id" in doc:
             doc["_id"] = doc.pop("id")
 
@@ -85,12 +83,12 @@ def insert_data(
             doc["created_at"] = datetime.datetime.now(datetime.UTC)
 
     to_insert = [
-        ("users", user_data, transform_user),
-        ("movies", movie_data, transform_movie),
-        ("ratings", rating_data, transform_rating),
-        ("favorites", favorite_data, transform_favorite),
-        ("reviews", review_data, transform_review),
-        ("review_likes", review_likes_data, transform_review_like),
+        ("users", data["user_data"], transform_user),
+        ("movies", data["movie_data"], transform_movie),
+        ("ratings", data["rating_data"], transform_rating),
+        ("favorites", data["favorite_data"], transform_favorite),
+        ("reviews", data["review_data"], transform_review),
+        ("review_likes", data["review_likes_data"], transform_review_like),
     ]
 
     for collection_name, documents, transform_func in to_insert:
@@ -98,11 +96,8 @@ def insert_data(
 
 
 if __name__ == "__main__":
-    data = generate_data(
-        IDType.ObjectId,
-    )
-
+    generated_data = generate_data(IDType.ObjectId)
     insert_data(
-        **data,
-        dsl=dsl
+        data=generated_data,
+        dsl=mongo_dsl
     )
