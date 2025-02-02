@@ -30,7 +30,7 @@ sentry_sdk.init(
 
 app = fastapi.FastAPI(
     title=settings.PROJECT_NAME,
-    description="Auth movies service",
+    description="UGC-2 service",
     version="1.0.0",
     lifespan=lifespan,
     exception_handlers=exception_handlers,
