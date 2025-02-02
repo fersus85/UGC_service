@@ -6,7 +6,7 @@ SRC_DIR = src
 SENTRY_DIR = sentry
 TEST_PATH = $(CURDIR)/tests
 MONGO_COMPOSE_PATH = $(CURDIR)/docker-compose-mongodb.yml
-SENTRY_COMPOSE_PATH = $(CURDIR)/docker-compose-sentry.yml
+ELK_COMPOSE_PATH = $(CURDIR)/deploy/docker-compose-elk.yml
 SENTRY_COMPOSE_PATH = $(SENTRY_DIR)/docker-compose.yml
 
 all: up
