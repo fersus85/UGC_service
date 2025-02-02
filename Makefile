@@ -3,9 +3,11 @@
 PYTHON = python3
 BLACK_LINE_LENGTH = --line-length 79
 SRC_DIR = src
+SENTRY_DIR = sentry
 TEST_PATH = $(CURDIR)/tests
 MONGO_COMPOSE_PATH = $(CURDIR)/docker-compose-mongodb.yml
 ELK_COMPOSE_PATH = $(CURDIR)/deploy/docker-compose-elk.yml
+SENTRY_COMPOSE_PATH = $(SENTRY_DIR)/docker-compose.yml
 
 all: up
 
@@ -41,6 +43,21 @@ up-elk:
 	@echo "Запуск ELK..."
 	@docker compose -f $(ELK_COMPOSE_PATH) up -d --build
 
+# Установка sentry
+install-sentry:
+	@echo "Downloading Sentry"
+	@mkdir -p $(SENTRY_DIR) && curl -L "https://github.com/getsentry/self-hosted/archive/refs/tags/25.1.0.tar.gz" | tar xz -C $(SENTRY_DIR) --strip-components=1
+	@echo "Installing Sentry"
+	@cd ./sentry && ./install.sh --no-report-self-hosted-issues
+
+# Запуск Sentry
+up-sentry:
+	@docker compose -f $(SENTRY_COMPOSE_PATH) up -d
+
+# Остановка Sentry
+down-sentry:
+	@docker compose -f $(SENTRY_COMPOSE_PATH) down
+
 # Установка зависимостей продакшен
 install:
 	@echo "Установка зависимостей..."
@@ -73,6 +90,9 @@ help:
 	@echo "Доступные команды:"
 	@echo "  make up-ugc2             - Запуск сервиса UGC2"
 	@echo "  make down-ugc2           - Остановка UGC2 и очистка"
+	@echo "  make install-sentry      - Установка сервиса Sentry"
+	@echo "  make up-sentry           - Запуск сервиса Sentry"
+	@echo "  make down-sentry         - Остановка Sentry"
 	@echo "  make up-mongo            - Запуск кластера MongoDB"
 	@echo "  make init-mongo          - Инициализация кластера MongoDB"
 	@echo "  make down-mongo          - Остановка кластера MongoDB"
