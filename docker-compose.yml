@@ -2,6 +2,22 @@ name: UGC2-Service
 
 services:
 
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    expose:
+      - "27017"
+    volumes:
+      - mongo_volume:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - auth_network
+
   redis-ugc2:
     image: redis:7.4.1
     command: redis-server --save 60 1 --loglevel warning
@@ -29,6 +45,8 @@ services:
       - fastapi_log_volume:/app/logs/
     depends_on:
       redis-ugc2:
+        condition: service_healthy
+      mongo:
         condition: service_healthy
     networks:
       - auth_network
@@ -65,6 +83,7 @@ services:
 volumes:
   fastapi_log_volume:
   nginx_log_volume:
+  mongo_volume:
 
 networks:
   auth_network:

@@ -60,15 +60,7 @@ docker network create auth_network
 1. Запустите сервис Аутентификации:
   [документация](https://github.com/fersus85/Auth_sprint_2/blob/main/README.md)
 ### UGC2
-1. Запустите кластер MongoDB
-```bash
-make up-mongo
-```
-2. Проинициализируйте кластер MongoDB
-```bash
-make init-mongo
-```
-3. Запустите сервис UGC2
+1. Запустите сервис UGC2
 ```bash
 make up-ugc2
 ```
@@ -78,15 +70,7 @@ make up-ugc2
 1. Запустите сервис Аутентификации:
   [документация](https://github.com/fersus85/Auth_sprint_2/blob/main/README.md)
 ### UGC2
-1. Запустите кластер MongoDB
-```bash
-docker compose -f docker-compose-mongodb.yml up -d --build
-```
-2. Проинициализируйте кластер MongoDB
-```bash
-mongo/init.sh
-```
-3. Запустите сервис UGC2
+1. Запустите сервис UGC2
 ```bash
 docker compose up -d --build
 ```

@@ -5,7 +5,6 @@ BLACK_LINE_LENGTH = --line-length 79
 SRC_DIR = src
 SENTRY_DIR = sentry
 TEST_PATH = $(CURDIR)/tests
-MONGO_COMPOSE_PATH = $(CURDIR)/docker-compose-mongodb.yml
 ELK_COMPOSE_PATH = $(CURDIR)/deploy/docker-compose-elk.yml
 SENTRY_COMPOSE_PATH = $(SENTRY_DIR)/docker-compose.yml
 
@@ -20,23 +19,8 @@ down-ugc2:
 	@echo "Остановка UGC2..."
 	@docker compose down
 	@echo "Очистка временных файлов и контейнеров..."
-	@find . -type f -name '*.pyc' -delete
-	@find . -type d -name '__pycache__' -delete
-
-# Запуск кластера MongoDB
-up-mongo:
-	@echo "Запуск кластера MongoDB..."
-	@docker compose -f $(MONGO_COMPOSE_PATH) up -d --build
-
-# Инициализация кластера MongoDB
-init-mongo:
-	@echo "Инициализация MongoDB..."
-	@bash ./mongo/init.sh
-
-# Oстановкa кластера MongoDB
-down-mongo:
-	@echo "Остановка кластера MongoDB..."
-	@docker compose -f $(MONGO_COMPOSE_PATH) down
+	@find . -type f -name '*.pyc' -delete 2>/dev/null
+	@find . -type d -name '__pycache__' -delete 2>/dev/null
 
 # Запуск ELK
 up-elk:
@@ -93,9 +77,6 @@ help:
 	@echo "  make install-sentry      - Установка сервиса Sentry"
 	@echo "  make up-sentry           - Запуск сервиса Sentry"
 	@echo "  make down-sentry         - Остановка Sentry"
-	@echo "  make up-mongo            - Запуск кластера MongoDB"
-	@echo "  make init-mongo          - Инициализация кластера MongoDB"
-	@echo "  make down-mongo          - Остановка кластера MongoDB"
 	@echo "  make install             - Установка зависимостей prod"
 	@echo "  make install-dev         - Установка зависимостей dev"
 	@echo "  make lint                - Запуск линтера"
