@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     MONGO_PORT: int = 27019
     MONGO_DB: str = "ugc2_movies"
     AUTH_SERVICE_URL: str = ""
+    SENTRY_DSN: str = ""
 
 
 settings = Settings()
