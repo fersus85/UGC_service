@@ -97,7 +97,7 @@ class ReviewLikeModel(Document):
             IndexModel(
                 [
                     ("review_id", ASCENDING),
-                    ("film_id", ASCENDING),
+                    ("user_id", ASCENDING),
                 ],
                 name="review_user_idx",
                 unique=True,

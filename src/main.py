@@ -1,8 +1,8 @@
 import logging
 import os
 
-import sentry_sdk
 import fastapi
+import sentry_sdk
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 

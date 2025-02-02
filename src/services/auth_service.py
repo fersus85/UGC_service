@@ -1,6 +1,7 @@
 import logging
 import time
 
+import aiohttp
 import jwt
 import requests
 from fastapi import Depends
@@ -12,7 +13,7 @@ from exceptions.errors import UnauthorizedError
 logger = logging.getLogger(__name__)
 
 
-def verify_token(token: str) -> None:
+async def verify_token(token: str) -> None:
     """
     Функция отправляет запрос в сервис AUTH для верификации токена
     Args:
@@ -24,9 +25,10 @@ def verify_token(token: str) -> None:
     try:
         headers = {"Content-Type": "application/json"}
         json = {"access_token": token}
-        response = requests.post(
-            url=settings.AUTH_SERVICE_URL, headers=headers, json=json
-        )
+        async with aiohttp.ClientSession() as session:
+            response = await session.post(
+                url=settings.AUTH_SERVICE_URL, headers=headers, json=json
+            )
         response.raise_for_status()
     except requests.HTTPError as ex:
         logger.error("HTTPerror: %s", ex)
@@ -38,7 +40,7 @@ def verify_token(token: str) -> None:
         logger.error("Unexpected error: %s", ex)
 
 
-def calc_diff(token: str) -> int:
+async def calc_diff(token: str) -> int:
     """
     Вычисляет разницу между временем истечения токена и текущим временем.
     Args:
@@ -92,9 +94,9 @@ class AuthService:
         if is_valid is not None:
             return
 
-        verify_token(token)
+        await verify_token(token)
 
-        diff = calc_diff(token)
+        diff = await calc_diff(token)
         if diff <= 0:
             raise UnauthorizedError
 
