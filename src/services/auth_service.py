@@ -3,7 +3,6 @@ import time
 
 import aiohttp
 import jwt
-import requests
 from fastapi import Depends
 
 from core.config import settings
@@ -30,11 +29,11 @@ async def verify_token(token: str) -> None:
                 url=settings.AUTH_SERVICE_URL, headers=headers, json=json
             )
         response.raise_for_status()
-    except requests.HTTPError as ex:
-        logger.error("HTTPerror: %s", ex)
+    except aiohttp.ClientResponseError as ex:
+        logger.error("ClientResponseError: %s", ex)
         raise UnauthorizedError
-    except requests.ConnectionError as ex:
-        logger.error("Conn error: %s", ex)
+    except aiohttp.ClientError as ex:
+        logger.error("ClientError: %s", ex)
         raise UnauthorizedError
     except Exception as ex:
         logger.error("Unexpected error: %s", ex)
