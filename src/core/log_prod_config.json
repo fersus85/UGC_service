@@ -1,35 +1,72 @@
 {
-    "version": 1,
-    "disable_existing_loggers": false,
-    "formatters": {
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {
       "simple": {
-        "format": "%(asctime)s %(module)-16s:%(lineno)s %(levelname)-10s %(message)s",
-        "datefmt": "[%Y-%m-%d %H:%M:%S%z]"
-      }
-    },
-  "handlers": {
-    "stderr": {
-      "class": "logging.StreamHandler",
-      "level": "INFO",
-      "stream": "ext://sys.stderr",
-      "formatter": "simple"
+          "format": "%(asctime)s %(module)-16s:%(lineno)s %(levelname)-10s %(message)s",
+          "datefmt": "[%Y-%m-%d %H:%M:%S%z]"
       },
-    "file": {
-      "class": "logging.handlers.RotatingFileHandler",
-      "level": "DEBUG",
-      "formatter": "simple",
-      "filename": "../logs/auth.log",
-      "maxBytes": 100000,
-      "backupCount": 3
-    }
-    },
-  "loggers": {
-    "root": {
-        "level": "DEBUG",
-        "handlers": [
-          "stderr",
-          "file"
-        ]
+      "json": {
+          "format": "{\"request_id\": \"%(request_id)s\", \"asctime\": \"%(asctime)s\", \"levelname\": \"%(levelname)s\", \"name\": \"%(name)s\", \"message\": \"%(message)s\", \"host\": \"%(host)s\", \"user-agent\": \"%(user-agent)s\", \"method\": \"%(method)s\", \"path\": \"%(path)s\", \"query_params\": \"%(query_params)s\", \"status_code\": \"%(status_code)s\"}"
+      },
+      "default": {
+          "fmt": "%(levelprefix)s %(message)s"
+      },
+      "access": {
+          "fmt": "%(levelprefix)s %(client_addr)s - '%(request_line)s' %(status_code)s"
       }
+  },
+  "handlers": {
+      "stderr": {
+          "class": "logging.StreamHandler",
+          "level": "INFO",
+          "stream": "ext://sys.stderr",
+          "formatter": "simple"
+      },
+      "default": {
+          "formatter": "default",
+          "class": "logging.StreamHandler",
+          "stream": "ext://sys.stdout"
+      },
+      "access": {
+          "formatter": "access",
+          "class": "logging.StreamHandler",
+          "stream": "ext://sys.stdout"
+      },
+      "jsonfile": {
+          "class": "logging.handlers.RotatingFileHandler",
+          "level": "DEBUG",
+          "formatter": "json",
+          "filename": "../logs/jsonugc2.log",
+          "maxBytes": 100000,
+          "backupCount": 3
+      },
+      "file": {
+        "class": "logging.handlers.RotatingFileHandler",
+        "level": "DEBUG",
+        "formatter": "simple",
+        "filename": "../logs/textugc2.log",
+        "maxBytes": 100000,
+        "backupCount": 3
     }
+  },
+  "loggers": {
+      "": {
+          "handlers": ["file", "stderr"],
+          "level": "INFO"
+      },
+      "fastapi": {
+        "handlers": ["jsonfile"],
+        "level": "DEBUG"
+      },
+      "uvicorn.error": {
+        "handlers": ["stderr"],
+        "level": "INFO"
+      },
+      "uvicorn.access": {
+          "handlers": ["access"],
+          "level": "INFO",
+          "propagate": false
+      }
   }
+}
