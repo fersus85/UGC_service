@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Path, status
 from services.bookmark_service import BookmarksService, get_bookmark_service
 from utils.token_helpers import get_user_id_from_access_token
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("fastapi")
 
 router = APIRouter(
     prefix="/bookmarks",

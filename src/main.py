@@ -10,7 +10,7 @@ from core.config import settings
 from core.log_config import setup_logging
 from exceptions.exception import exception_handlers
 from lifespan import lifespan
-from middlewares import log_stuff
+from middlewares import RequestLogMiddleware
 
 load_dotenv()
 
@@ -39,7 +39,7 @@ app = fastapi.FastAPI(
 )
 
 
-app.middleware("http")(log_stuff)
+app.add_middleware(RequestLogMiddleware)
 
 app.add_middleware(
     CORSMiddleware,

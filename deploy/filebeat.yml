@@ -2,7 +2,24 @@ filebeat.inputs:
 - type: filestream
   enabled: true
   paths:
-    - /var/log/fastapi/*
+    - /var/log/fastapi/json*
+  tags: ["UGC_2"]
+  fields:
+    log_type: "fastapi"
+
+  processors:
+  - decode_json_fields:
+      fields: ["message"]
+      process_array: false
+      max_depth: 2
+      target: ""
+      overwrite_keys: true
+      add_error_key: false
+
+- type: filestream
+  enabled: true
+  paths:
+    - /var/log/fastapi/text*
   tags: ["UGC_2"]
   fields:
     log_type: "fastapi"
@@ -14,6 +31,15 @@ filebeat.inputs:
   tags: ["UGC_2"]
   fields:
     log_type: "nginx"
+
+  processors:
+  - decode_json_fields:
+      fields: ["message"]
+      process_array: false
+      max_depth: 2
+      target: ""
+      overwrite_keys: true
+      add_error_key: false
 
 output.logstash:
   enabled: true

@@ -1,12 +1,27 @@
 import logging
 
-from fastapi import Request
-from fastapi.responses import Response
+from fastapi import Request, Response
+from starlette.background import BackgroundTask
+from starlette.middleware.base import BaseHTTPMiddleware
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("fastapi")
 
 
-async def log_stuff(request: Request, call_next):
-    response: Response = await call_next(request)
-    logger.info("%s %s %s", response.status_code, request.method, request.url)
-    return response
+def write_log_data(request: Request, response: Response):
+    extra = {
+        "host": request.headers.get("host", ""),
+        "user-agent": request.headers.get("user-agent", ""),
+        "method": request.method,
+        "path": request.url.path,
+        "query_params": str(request.query_params),
+        "status_code": response.status_code,
+    }
+
+    logger.info("%s %s", request.method, request.url.path, extra=extra)
+
+
+class RequestLogMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.background = BackgroundTask(write_log_data, request, response)
+        return response
