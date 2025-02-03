@@ -17,7 +17,7 @@ def write_log_data(request: Request, response: Response):
         "status_code": response.status_code,
     }
 
-    logger.info(f"{request.method} {request.url.path}", extra=extra)
+    logger.info("%s %s", request.method, request.url.path, extra=extra)
 
 
 class RequestLogMiddleware(BaseHTTPMiddleware):
