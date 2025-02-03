@@ -25,6 +25,9 @@ sleep 1
 docker exec -it mongos1 bash -c 'echo "sh.enableSharding(\"ugc2_movies\")" | mongosh'
 sleep 1
 
+
+
+
 # Создадим коллекцию
 docker exec -it mongos1 bash -c 'echo "db.createCollection(\"ugc2_movies.film_bookmarks\")" | mongosh'
 sleep 1
