@@ -99,6 +99,7 @@ class FilmScoreService:
                 FilmScoreModel.user_id == user_uuid
             ).to_list()
             return [ScoreGRPC(
+                id=str(fs.id),
                 film_id=str(fs.film_id),
                 film_score=fs.film_score,
                 created_at=fs.created_at

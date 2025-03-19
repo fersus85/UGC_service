@@ -14,4 +14,5 @@ class FilmBookmark(BaseModel):
 
 
 class FilmBookmarkGRPC(FilmBookmark):
+    id: str
     created_at: datetime

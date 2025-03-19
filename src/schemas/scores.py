@@ -27,4 +27,5 @@ class AverageScore(BaseModel):
 
 
 class ScoreGRPC(AddScore):
+    id: str
     created_at: datetime

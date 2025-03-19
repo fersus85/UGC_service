@@ -175,6 +175,7 @@ class ReviewsService:
             ).to_list()
             return [
                 FilmReviewGRPC(
+                    id=str(review.id),
                     film_id=str(review.film_id),
                     review_text=review.review_text,
                     created_at=review.created_at

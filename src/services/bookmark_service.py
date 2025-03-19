@@ -40,6 +40,7 @@ class BookmarksService:
                 FilmBookmarkModel.user_id == UUID(user_id),
             ).to_list()
             return [FilmBookmarkGRPC(
+                id=str(bookmark.id),
                 film_id=str(bookmark.film_id),
                 created_at=bookmark.created_at
             ) for bookmark in bookmarks_list]
