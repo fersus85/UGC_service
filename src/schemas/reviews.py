@@ -24,3 +24,8 @@ class FilmReviewPost(BaseModel):
 
     review_text: str
     film_score: int = Field(..., ge=1, le=10)
+
+
+class SimpleFilmReview(BaseModel):
+    id: str
+    review_text: str

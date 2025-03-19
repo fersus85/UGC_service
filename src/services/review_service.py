@@ -1,6 +1,6 @@
 import logging
 from functools import lru_cache
-from typing import Any
+from typing import Any, List
 from uuid import UUID
 
 from fastapi import HTTPException, status
@@ -11,6 +11,7 @@ from models.mongo_models import (
     FilmScoreModel,
     ReviewLikeModel,
 )
+from schemas.reviews import SimpleFilmReview
 
 logger = logging.getLogger(__name__)
 
@@ -164,6 +165,25 @@ class ReviewsService:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"error finding film bookmarks: {ex}",
+            ) from ex
+
+    async def get_user_reviews(self, user_id: str) -> List[SimpleFilmReview]:
+        try:
+            user_uuid = UUID(user_id)
+            reviews = await FilmReviewModel.find(
+                FilmReviewModel.user_id == user_uuid
+            ).to_list()
+            return [
+                SimpleFilmReview(
+                    id=str(review.id),
+                    review_text=review.review_text,
+                )
+                for review in reviews
+            ]
+        except Exception as ex:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Ошибка при получении отзывов пользователя: {ex}",
             ) from ex
 
 

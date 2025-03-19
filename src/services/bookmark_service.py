@@ -5,6 +5,7 @@ from fastapi import HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
 from models.mongo_models import FilmBookmarkModel
+from schemas.bookmarks import FilmBookmark
 
 
 class BookmarksService:
@@ -32,6 +33,10 @@ class BookmarksService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"error finding film bookmarks: {ex}",
             ) from ex
+
+    async def get_bookmark_films_schema(self, user_id: str) -> list[FilmBookmark]:
+        ids = await self.get_bookmark_films(user_id)
+        return [FilmBookmark(film_id=str(id)) for id in ids]
 
     async def add_film_to_bookmarks(self, film_id: str, user_id: str) -> None:
         """

@@ -1,0 +1,65 @@
+/*
+Proto-файл для сервиса управления профилями.
+Определяет API для получения активностей пользователя.
+v. 1.0.1
+*/
+
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+package activities;
+
+// Тип активности, используемый для фильтрации событий
+enum ActivityType {
+    ACTIVITY_TYPE_RATING = 0;
+    ACTIVITY_TYPE_BOOKMARK = 1;
+    ACTIVITY_TYPE_REVIEW = 2;
+}
+
+/* Сервис для управления активностями пользователя.
+Предоставляет метод для получения стрима активностей пользователя.
+*/
+service ActivitiesService {
+    /*
+    Метод GetActivities принимает список пользователей и возвращает поток
+    активностей каждого пользователя из списка.
+    Метод ReceiveActivityUpdates принимает пустое сообщение и возвращает поток
+    активностей.
+    */
+    rpc GetActivities (UsersList) returns (stream Activity);
+    rpc ReceiveActivityUpdates(google.protobuf.Empty) returns (stream Activity);
+}
+
+message UsersList {
+    repeated string user_ids = 1;
+}
+
+message Activity {
+    string id = 1;
+    string user_id = 2;
+    ActivityType activity_type = 3;
+    google.protobuf.Timestamp created_at = 4;
+
+    oneof event_data {
+        Rating rating = 5;
+        Review review = 6;
+        Bookmark bookmark = 7;
+   }
+}
+
+
+message Rating {
+    string film_id = 1;
+    int32 rating = 2;
+}
+
+message Review {
+    string film_id = 1;
+    string review_text = 2;
+}
+
+message Bookmark {
+  string film_id = 1;
+}
