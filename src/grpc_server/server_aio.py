@@ -73,13 +73,40 @@ async def form_activities(user_id: str) -> List[pb2.Activity]:
     scores = await get_film_score_service().get_user_scores(user_id)
 
     ret = []
+    # Обработка закладок
     for bookmark in bookmarks:
         ret.append(pb2.Activity(
-            id=bookmark.film_id,
+            id=bookmark.id,
             user_id=user_id,
-            activity_type=0,
-            created_at=Timestamp().FromDatetime(datetime.now() + timedelta(seconds=2)),
+            activity_type=pb2.ActivityType.ACTIVITY_TYPE_BOOKMARK,
+            created_at=bookmark.created_at,
             bookmark=pb2.Bookmark(film_id=bookmark.film_id),
+        ))
+
+    # Обработка рецензий
+    for review in reviews:
+        ret.append(pb2.Activity(
+            id=review.id,
+            user_id=user_id,
+            activity_type=pb2.ActivityType.ACTIVITY_TYPE_REVIEW,
+            created_at=review.created_at,
+            review=pb2.Review(
+                film_id=review.film_id,
+                review_text=review.review_text,
+            )
+        ))
+
+    # Обработка оценок
+    for score in scores:
+        ret.append(pb2.Activity(
+            id=score.id,
+            user_id=user_id,
+            activity_type=pb2.ActivityType.ACTIVITY_TYPE_RATING,
+            created_at=score.created_at,
+            rating=pb2.Rating(
+                film_id=score.film_id,
+                rating=score.film_score,
+            )
         ))
 
     return ret
