@@ -27,5 +27,5 @@ class FilmReviewPost(BaseModel):
 
 
 class FilmReviewGRPC(BaseModel):
-    id: str
+    film_id: str
     review_text: str
