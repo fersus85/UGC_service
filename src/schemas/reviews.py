@@ -26,6 +26,6 @@ class FilmReviewPost(BaseModel):
     film_score: int = Field(..., ge=1, le=10)
 
 
-class SimpleFilmReview(BaseModel):
+class FilmReviewGRPC(BaseModel):
     id: str
     review_text: str

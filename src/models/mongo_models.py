@@ -16,6 +16,9 @@ class FilmScoreModel(Document):
     film_id: UUID
     user_id: UUID
     film_score: int = Field(..., ge=0, le=10)
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
     class Settings:
         name = "film_scores"
@@ -39,6 +42,9 @@ class FilmBookmarkModel(Document):
     id: UUID = Field(default_factory=uuid4)  # type: ignore
     film_id: UUID
     user_id: UUID
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
     class Settings:
         name = "film_bookmarks"
@@ -90,6 +96,9 @@ class ReviewLikeModel(Document):
     id: UUID = Field(default_factory=uuid4)  # type: ignore
     review_id: UUID
     user_id: UUID
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
     class Settings:
         name = "review_likes"

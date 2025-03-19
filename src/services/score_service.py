@@ -7,7 +7,7 @@ from fastapi import HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
 from models.mongo_models import FilmReviewModel, FilmScoreModel
-from schemas.scores import AddScore
+from schemas.scores import ScoreGRPC
 
 logger = logging.getLogger(__name__)
 
@@ -92,13 +92,17 @@ class FilmScoreService:
         ).avg(FilmScoreModel.film_score)
         return avg_score
 
-    async def get_user_scores(self, user_id: str) -> List[AddScore]:
+    async def get_user_scores(self, user_id: str) -> List[ScoreGRPC]:
         try:
             user_uuid = UUID(user_id)
             film_scores = await FilmScoreModel.find(
                 FilmScoreModel.user_id == user_uuid
             ).to_list()
-            return [AddScore(film_id=str(fs.film_id), film_score=fs.film_score) for fs in film_scores]
+            return [ScoreGRPC(
+                film_id=str(fs.film_id),
+                film_score=fs.film_score,
+                created_at=fs.created_at
+            ) for fs in film_scores]
         except Exception as ex:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,

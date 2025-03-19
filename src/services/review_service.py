@@ -11,7 +11,7 @@ from models.mongo_models import (
     FilmScoreModel,
     ReviewLikeModel,
 )
-from schemas.reviews import SimpleFilmReview
+from schemas.reviews import FilmReviewGRPC
 
 logger = logging.getLogger(__name__)
 
@@ -167,16 +167,17 @@ class ReviewsService:
                 detail=f"error finding film bookmarks: {ex}",
             ) from ex
 
-    async def get_user_reviews(self, user_id: str) -> List[SimpleFilmReview]:
+    async def get_user_reviews(self, user_id: str) -> List[FilmReviewGRPC]:
         try:
             user_uuid = UUID(user_id)
             reviews = await FilmReviewModel.find(
                 FilmReviewModel.user_id == user_uuid
             ).to_list()
             return [
-                SimpleFilmReview(
+                FilmReviewGRPC(
                     id=str(review.id),
                     review_text=review.review_text,
+                    created_at=review.created_at
                 )
                 for review in reviews
             ]

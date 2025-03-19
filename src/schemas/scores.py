@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 
@@ -22,3 +24,7 @@ class AverageScore(BaseModel):
     """
 
     average_score: float
+
+
+class ScoreGRPC(AddScore):
+    created_at: datetime
