@@ -30,3 +30,4 @@ class FilmReviewGRPC(BaseModel):
     id: str
     film_id: str
     review_text: str
+    created_at: datetime
