@@ -1,9 +1,7 @@
 import asyncio
-import time
+import logging
 from datetime import datetime, timedelta
-from random import uniform
 from typing import List
-from uuid import UUID
 
 import grpc
 from google.protobuf.timestamp_pb2 import Timestamp
@@ -12,11 +10,24 @@ from grpc_health.v1 import health_pb2, health_pb2_grpc
 
 import grpc_server.generated.activities_pb2 as pb2
 import grpc_server.generated.activities_pb2_grpc as pb2_grpc
+from grpc_server.utils.transformators import (
+    transform_film_score,
+    transform_film_bookmark,
+    transform_film_review
+)
+from init_services import init_mongo, init_casher
+from models.mongo_models import (
+    FilmScoreModel,
+    FilmBookmarkModel,
+    FilmReviewModel
+)
 from services.bookmark_service import get_bookmark_service
 from services.review_service import get_review_service
+from services.model_poller import ModelPoller, logger
 from services.score_service import get_film_score_service
 
-from src.init_services import init_mongo
+logger = logging.getLogger(__name__)
+
 
 activities = (
     pb2.Activity(
@@ -114,7 +125,7 @@ async def form_activities(user_id: str) -> List[pb2.Activity]:
 
 class HealthServicer(health_pb2_grpc.HealthServicer):
     async def Check(self, request, context):
-        print("Проверка успешна")
+        logger.info("Проверка успешна")
         return health_pb2.HealthCheckResponse(
             status=health_pb2.HealthCheckResponse.SERVING
         )
@@ -123,15 +134,30 @@ class HealthServicer(health_pb2_grpc.HealthServicer):
 class ActivitySender(pb2_grpc.ActivitiesServiceServicer):
     async def ReceiveActivityUpdates(self, request: Empty, context):
         """Асинхронно стримит активности."""
-        while True:
-            for activ in activities:
-                await asyncio.sleep(3)
-                print(activ.id)
+        queue = asyncio.Queue()
+
+        pollers = (
+            ModelPoller(FilmBookmarkModel, transform_film_bookmark),
+            ModelPoller(FilmReviewModel, transform_film_review),
+            ModelPoller(FilmScoreModel, transform_film_score),
+        )
+
+        tasks = [asyncio.create_task(poller.run(queue)) for poller in pollers]
+
+        try:
+            while True:
+                activ = await queue.get()
                 yield activ
-            await asyncio.sleep(15)
+        except asyncio.CancelledError as e:
+            logger.info("ReceiveActivityUpdates cancelled")
+            raise e
+        finally:
+            for t in tasks:
+                t.cancel()
+            await asyncio.gather(*tasks, return_exceptions=True)
+            logger.info("All poll tasks stopped.")
 
     async def GetActivities(self, request, context):
-        print(request.user_ids)
         for user_id in request.user_ids:
             l = await form_activities(user_id)
             for activ in l:
@@ -144,12 +170,13 @@ async def serve():
     health_pb2_grpc.add_HealthServicer_to_server(HealthServicer(), server)
     server.add_insecure_port("[::]:50051")
     await server.start()
-    print("Сервер запущен на порту 50051")
+    logger.info("Сервер запущен на порту 50051")
     await server.wait_for_termination()
 
 
 async def main():
     await init_mongo()
+    await init_casher()
     server_task = asyncio.create_task(serve())
     await server_task
 
