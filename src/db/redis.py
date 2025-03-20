@@ -36,6 +36,21 @@ class RedisCache(AbstractCache):
                 raise ex
             return None
 
+    async def incr(
+            self,
+            key: str,
+            value: int,
+            raise_exc: bool = False
+    ) -> int:
+        try:
+            v = await self.cacher.incr(key, value)
+            logger.debug("Result stored in cache")
+            return v
+        except Exception as ex:
+            logger.error("Error storing to cache: %s", ex)
+            if raise_exc is True:
+                raise ex
+
 
 redis: Optional[Redis] = None
 

@@ -1,12 +1,33 @@
 from datetime import datetime, timezone
+from typing import Optional
 from uuid import UUID, uuid4
 
-from beanie import Document
+from beanie import Document, before_event, Insert
 from pydantic import Field
 from pymongo import ASCENDING, IndexModel
 
+from db.casher import get_cacher
 
-class FilmScoreModel(Document):
+
+async def get_next_counter(key: str) -> int:
+    cacher = await get_cacher()
+    return await cacher.incr(key, 1)
+
+
+class MonotonicSequenceMixin:
+    monotonic_seq: Optional[int] = None
+
+    @classmethod
+    def get_redis_key(cls) -> str:
+        return f"UGC_service:src:models:mongo_models:{cls.__name__}:counter"
+
+    @before_event(Insert)
+    async def set_monotonic_seq(self):
+        key = self.get_redis_key()
+        self.monotonic_seq = await get_next_counter(key)
+
+
+class FilmScoreModel(MonotonicSequenceMixin, Document):
     """
     Модель таблицы с оценками фильмов.
     """
@@ -34,7 +55,7 @@ class FilmScoreModel(Document):
         ]
 
 
-class FilmBookmarkModel(Document):
+class FilmBookmarkModel(MonotonicSequenceMixin, Document):
     """
     Модель таблицы с пользовательскими закладками фильмов.
     """
@@ -60,7 +81,7 @@ class FilmBookmarkModel(Document):
         ]
 
 
-class FilmReviewModel(Document):
+class FilmReviewModel(MonotonicSequenceMixin, Document):
     """
     Модель таблицы с пользовательскими отзывами на фильмы.
     """
@@ -88,7 +109,7 @@ class FilmReviewModel(Document):
         ]
 
 
-class ReviewLikeModel(Document):
+class ReviewLikeModel(MonotonicSequenceMixin, Document):
     """
     Модель таблицы с лайками на отзывы.
     """
