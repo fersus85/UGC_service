@@ -32,55 +32,6 @@ from services.score_service import get_film_score_service
 logger = logging.getLogger(__name__)
 
 
-activities = (
-    pb2.Activity(
-        id="act1",
-        user_id="d7047039-c610-4e15-9296-86ee5a578656",
-        activity_type=0,
-        created_at=Timestamp().FromDatetime(
-            datetime.now() + timedelta(seconds=1)
-        ),
-        rating=pb2.Rating(film_id="1", rating=8),
-    ),
-    pb2.Activity(
-        id="act2",
-        user_id="d7047039-c610-4e15-9296-86ee5a578656",
-        activity_type=2,
-        created_at=Timestamp().FromDatetime(
-            datetime.now() + timedelta(seconds=1)
-        ),
-        review=pb2.Review(film_id="2", review_text="So so"),
-    ),
-    pb2.Activity(
-        id="act3",
-        user_id="user2",
-        activity_type=1,
-        created_at=Timestamp().FromDatetime(
-            datetime.now() + timedelta(seconds=2)
-        ),
-        bookmark=pb2.Bookmark(film_id="1"),
-    ),
-    pb2.Activity(
-        id="act4",
-        user_id="user3",
-        activity_type=0,
-        created_at=Timestamp().FromDatetime(
-            datetime.now() + timedelta(seconds=2)
-        ),
-        rating=pb2.Rating(film_id="2", rating=5),
-    ),
-    pb2.Activity(
-        id="act5",
-        user_id="user3",
-        activity_type=2,
-        created_at=Timestamp().FromDatetime(
-            datetime.now() + timedelta(seconds=3)
-        ),
-        review=pb2.Review(film_id="1", review_text="Wow"),
-    ),
-)
-
-
 async def form_activities(user_id: str) -> List[pb2.Activity]:
     bookmarks = await get_bookmark_service().get_bookmark_films_schema(user_id)
     reviews = await get_review_service().get_user_reviews(user_id)
