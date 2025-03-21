@@ -1,7 +1,9 @@
 # type: ignore
 import asyncio
 import logging
+import os.path
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import List
 
 import grpc
@@ -165,11 +167,44 @@ class ActivitySender(pb2_grpc.ActivitiesServiceServicer):
                 yield activ
 
 
+def init_server_creds() -> grpc.ServerCredentials:
+    base_dir = Path(__file__).resolve().parent
+    cert_path = os.path.join(base_dir, "certs")
+    with open(
+            os.path.join(cert_path, "server.key"),
+            "rb"
+    ) as key_file:
+        private_key = key_file.read()
+
+    with open(
+            os.path.join(cert_path, "ca.crt"),
+            "rb"
+    ) as root_file:
+        root_cert = root_file.read()
+
+    with open(
+            os.path.join(cert_path, "server.crt"),
+            "rb"
+    ) as cert_file:
+        server_cert = cert_file.read()
+
+    credentials = grpc.ssl_server_credentials(
+        [
+            (private_key, server_cert),
+        ],
+        root_certificates=root_cert,
+        require_client_auth=True,
+    )
+    return credentials
+
+
 async def serve():
     server = grpc.aio.server()
     pb2_grpc.add_ActivitiesServiceServicer_to_server(ActivitySender(), server)
     health_pb2_grpc.add_HealthServicer_to_server(HealthServicer(), server)
-    server.add_insecure_port("[::]:50051")
+
+    credentials = init_server_creds()
+    server.add_secure_port("[::]:50051", credentials)
     await server.start()
     logger.info("Сервер запущен на порту 50051")
     await server.wait_for_termination()
