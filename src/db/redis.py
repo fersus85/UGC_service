@@ -45,10 +45,10 @@ class RedisCache(AbstractCache):
     async def incr(
             self,
             key: str,
-            value: int
+            amount: int = 1
     ) -> int:
         try:
-            v = await self.cacher.incr(key, value)
+            v = await self.cacher.incr(key, amount)
             logger.debug("Result stored in cache")
             return v
         except Exception as ex:

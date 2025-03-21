@@ -15,7 +15,7 @@ async def get_next_counter(key: str) -> int:
     if cacher is None:
         raise ValueError("Cacher not initialized")
 
-    return await cacher.incr(key, 1)
+    return await cacher.incr(key)
 
 
 class MonotonicSequenceMixin:
