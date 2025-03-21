@@ -23,7 +23,7 @@ from models.mongo_models import (
 )
 from services.bookmark_service import get_bookmark_service
 from services.review_service import get_review_service
-from services.model_poller import ModelPoller, logger
+from services.model_poller import ModelPoller
 from services.score_service import get_film_score_service
 
 logger = logging.getLogger(__name__)
@@ -159,8 +159,8 @@ class ActivitySender(pb2_grpc.ActivitiesServiceServicer):
 
     async def GetActivities(self, request, context):
         for user_id in request.user_ids:
-            l = await form_activities(user_id)
-            for activ in l:
+            activs = await form_activities(user_id)
+            for activ in activs:
                 yield activ
 
 

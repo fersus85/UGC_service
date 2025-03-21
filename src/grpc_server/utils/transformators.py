@@ -3,7 +3,11 @@ from datetime import datetime
 from google.protobuf.timestamp_pb2 import Timestamp
 
 import grpc_server.generated.activities_pb2 as pb2
-from models.mongo_models import FilmScoreModel, FilmBookmarkModel, FilmReviewModel
+from models.mongo_models import (
+    FilmScoreModel,
+    FilmBookmarkModel,
+    FilmReviewModel
+)
 
 
 def dt_to_pb_timestamp(dt: datetime) -> Timestamp:

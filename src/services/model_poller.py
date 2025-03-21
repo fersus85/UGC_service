@@ -24,7 +24,9 @@ class ModelPoller:
         self.batch_size = batch_size
 
         cacher_path = "UGC_service:src:services:model_poller:"
-        self.last_monotonic_key = cacher_path + f"{model_class.__name__}:last_monotonic_key"
+        self.last_monotonic_key = (cacher_path
+                                   + f"{model_class.__name__}"
+                                     f":last_monotonic_key")
 
     async def run(self, queue: asyncio.Queue):
         cacher = await get_cacher()

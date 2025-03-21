@@ -34,7 +34,10 @@ class BookmarksService:
                 detail=f"error finding film bookmarks: {ex}",
             ) from ex
 
-    async def get_bookmark_films_schema(self, user_id: str) -> list[FilmBookmarkGRPC]:
+    async def get_bookmark_films_schema(
+            self,
+            user_id: str
+    ) -> list[FilmBookmarkGRPC]:
         try:
             bookmarks_list = await FilmBookmarkModel.find(
                 FilmBookmarkModel.user_id == UUID(user_id),

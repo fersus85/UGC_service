@@ -17,7 +17,13 @@ class RedisCache(AbstractCache):
     def __init__(self, cache_type: Redis) -> None:
         self.cacher = cache_type
 
-    async def set(self, key: str, value: Any, expire: Optional[int] = None, raise_exc: bool = False) -> None:
+    async def set(
+            self,
+            key: str,
+            value: Any,
+            expire: Optional[int] = None,
+            raise_exc: bool = False
+    ) -> None:
         try:
             await self.cacher.set(key, pickle.dumps(value), ex=expire)
             logger.debug("Result stored in cache")
