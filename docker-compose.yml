@@ -53,6 +53,20 @@ services:
     networks:
       - auth_network
 
+  grpc-ugc2:
+    build:
+      context: .
+    image: fastapi
+    depends_on:
+      - mongo
+      - redis-ugc2
+    command: ["python", "/app/src/grpc_server/server_aio.py"]
+    ports:
+      - "50051:50051"
+    restart: always
+    networks:
+      - auth_network
+
   nginx-ugc2:
     image: nginx:1.27.2
     volumes:
