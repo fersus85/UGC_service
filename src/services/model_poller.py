@@ -1,12 +1,9 @@
 import asyncio
 import logging
-from datetime import datetime
 from typing import Type, Callable
-from uuid import UUID
 
 from beanie import Document
-from beanie.odm.operators.find.comparison import GT, Eq
-from beanie.odm.operators.find.logical import Or, And
+from beanie.odm.operators.find.comparison import GT
 
 from db.casher import get_cacher
 
@@ -27,12 +24,7 @@ class ModelPoller:
         self.batch_size = batch_size
 
         cacher_path = "UGC_service:src:services:model_poller:"
-        self.last_created_at_key = (
-                cacher_path + f"{model_class.__name__}:last_created_at"
-        )
-        self.last_id_key = (
-                cacher_path + f"{model_class.__name__}:last_id_key"
-        )
+        self.last_monotonic_key = cacher_path + f"{model_class.__name__}:last_monotonic_key"
 
     async def run(self, queue: asyncio.Queue):
         cacher = await get_cacher()
@@ -42,35 +34,12 @@ class ModelPoller:
 
         while True:
             while True:
-                last_created_at_str = await cacher.get(
-                    self.last_created_at_key
-                )
-                last_id_str = await cacher.get(
-                    self.last_id_key
-                )
+                last_monotonic = await cacher.get(self.last_monotonic_key)
 
-                if not last_created_at_str or not last_id_str:
-                    last_created_at = datetime(1970, 1, 1)
-                    last_id = UUID(int=0)
-                else:
-                    last_created_at = datetime.fromisoformat(
-                        last_created_at_str
-                    )
-                    last_id = UUID(last_id_str)
+                if not last_monotonic:
+                    last_monotonic = 0
 
-                query = Or(
-                    GT(
-                        self.model_class.created_at, last_created_at
-                    ),
-                    And(
-                        Eq(
-                            self.model_class.created_at, last_created_at
-                        ),
-                        GT(
-                            self.model_class.id, last_id
-                        ),
-                    ),
-                )
+                query = GT(self.model_class.monotonic_seq, last_monotonic)
 
                 docs = await (
                     self.model_class.find(query).sort(
@@ -85,18 +54,11 @@ class ModelPoller:
                     break
 
                 last_doc = docs[-1]
-                new_created_at = last_doc.created_at
-                new_id = last_doc.id
+                last_monotonic = last_doc.monotonic_seq
 
                 await cacher.set(
-                    self.last_created_at_key,
-                    new_created_at.isoformat(),
-                    expire=None,
-                    raise_exc=True
-                )
-                await cacher.set(
-                    self.last_id_key,
-                    str(new_id),
+                    self.last_monotonic_key,
+                    last_monotonic,
                     expire=None,
                     raise_exc=True
                 )
