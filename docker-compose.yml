@@ -56,10 +56,11 @@ services:
   grpc-ugc2:
     build:
       context: .
-    image: fastapi
     depends_on:
-      - mongo
-      - redis-ugc2
+      mongo:
+        condition: service_healthy
+      redis-ugc2:
+        condition: service_healthy
     command: ["python", "/app/src/grpc_server/server_aio.py"]
     ports:
       - "50051:50051"
