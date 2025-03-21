@@ -3,6 +3,7 @@ import logging
 from typing import Type, Callable
 
 from beanie import Document
+from beanie.odm.enums import SortDirection
 from beanie.odm.operators.find.comparison import GT
 
 from db.casher import get_cacher
@@ -46,8 +47,14 @@ class ModelPoller:
                 docs = await (
                     self.model_class.find(query).sort(
                         [
-                            (self.model_class.created_at, 1),
-                            (self.model_class.id, 1),
+                            (
+                                self.model_class.created_at,
+                                SortDirection.ASCENDING
+                            ),
+                            (
+                                self.model_class.id,
+                                SortDirection.ASCENDING
+                            ),  # type: ignore[list-item]
                         ]
                     ).limit(self.batch_size).to_list(self.batch_size)
                 )

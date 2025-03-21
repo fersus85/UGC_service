@@ -45,8 +45,7 @@ class RedisCache(AbstractCache):
     async def incr(
             self,
             key: str,
-            value: int,
-            raise_exc: bool = False
+            value: int
     ) -> int:
         try:
             v = await self.cacher.incr(key, value)
@@ -54,8 +53,7 @@ class RedisCache(AbstractCache):
             return v
         except Exception as ex:
             logger.error("Error storing to cache: %s", ex)
-            if raise_exc is True:
-                raise ex
+            raise ex
 
 
 redis: Optional[Redis] = None

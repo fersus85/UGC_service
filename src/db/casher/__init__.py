@@ -19,8 +19,7 @@ class AbstractCache(Protocol):
     async def incr(
             self,
             key: str,
-            value: int,
-            raise_exc: bool = False
+            value: int
     ) -> int:
         pass
 

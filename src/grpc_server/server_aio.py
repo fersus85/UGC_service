@@ -1,3 +1,4 @@
+# type: ignore
 import asyncio
 import logging
 from datetime import datetime, timedelta
@@ -134,7 +135,7 @@ class HealthServicer(health_pb2_grpc.HealthServicer):
 class ActivitySender(pb2_grpc.ActivitiesServiceServicer):
     async def ReceiveActivityUpdates(self, request: Empty, context):
         """Асинхронно стримит активности."""
-        queue = asyncio.Queue()
+        queue: asyncio.Queue = asyncio.Queue()
 
         pollers = (
             ModelPoller(FilmBookmarkModel, transform_film_bookmark),
