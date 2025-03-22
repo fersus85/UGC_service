@@ -17,20 +17,43 @@ class RedisCache(AbstractCache):
     def __init__(self, cache_type: Redis) -> None:
         self.cacher = cache_type
 
-    async def set(self, key: str, value: Any, expire: int) -> None:
+    async def set(
+            self,
+            key: str,
+            value: Any,
+            expire: Optional[int] = None,
+            raise_exc: bool = False
+    ) -> None:
         try:
             await self.cacher.set(key, pickle.dumps(value), ex=expire)
             logger.debug("Result stored in cache")
         except Exception as ex:
             logger.error("Error storing to cache: %s", ex)
+            if raise_exc is True:
+                raise ex
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str, raise_exc: bool = False) -> Optional[Any]:
         try:
             cache_value = await self.cacher.get(key)
             return pickle.loads(cache_value) if cache_value else None
         except Exception as ex:
             logger.error("Error retrieving from cache: %s", ex)
+            if raise_exc is True:
+                raise ex
             return None
+
+    async def incr(
+            self,
+            key: str,
+            amount: int = 1
+    ) -> int:
+        try:
+            v = await self.cacher.incr(key, amount)
+            logger.debug("Result stored in cache")
+            return v
+        except Exception as ex:
+            logger.error("Error storing to cache: %s", ex)
+            raise ex
 
 
 redis: Optional[Redis] = None

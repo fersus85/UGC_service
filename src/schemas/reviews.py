@@ -24,3 +24,10 @@ class FilmReviewPost(BaseModel):
 
     review_text: str
     film_score: int = Field(..., ge=1, le=10)
+
+
+class FilmReviewGRPC(BaseModel):
+    id: str
+    film_id: str
+    review_text: str
+    created_at: datetime

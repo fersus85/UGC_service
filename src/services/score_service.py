@@ -1,11 +1,13 @@
 import logging
 from functools import lru_cache
+from typing import List
 from uuid import UUID
 
 from fastapi import HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
 from models.mongo_models import FilmReviewModel, FilmScoreModel
+from schemas.scores import ScoreGRPC
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +91,24 @@ class FilmScoreService:
             FilmScoreModel.film_id == UUID(film_id),
         ).avg(FilmScoreModel.film_score)
         return avg_score
+
+    async def get_user_scores(self, user_id: str) -> List[ScoreGRPC]:
+        try:
+            user_uuid = UUID(user_id)
+            film_scores = await FilmScoreModel.find(
+                FilmScoreModel.user_id == user_uuid
+            ).to_list()
+            return [ScoreGRPC(
+                id=str(fs.id),
+                film_id=str(fs.film_id),
+                film_score=fs.film_score,
+                created_at=fs.created_at
+            ) for fs in film_scores]
+        except Exception as ex:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Ошибка при получении оценок пользователя: {ex}",
+            ) from ex
 
 
 @lru_cache

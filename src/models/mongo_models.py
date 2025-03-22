@@ -1,12 +1,37 @@
 from datetime import datetime, timezone
+from typing import Optional
 from uuid import UUID, uuid4
 
-from beanie import Document
+from beanie import Document, before_event, Insert
 from pydantic import Field
 from pymongo import ASCENDING, IndexModel
 
+from db.casher import get_cacher
 
-class FilmScoreModel(Document):
+
+async def get_next_counter(key: str) -> int:
+    cacher = await get_cacher()
+
+    if cacher is None:
+        raise ValueError("Cacher not initialized")
+
+    return await cacher.incr(key)
+
+
+class MonotonicSequenceMixin:
+    monotonic_seq: Optional[int] = None
+
+    @classmethod
+    def get_redis_key(cls) -> str:
+        return f"UGC_service:src:models:mongo_models:{cls.__name__}:counter"
+
+    @before_event(Insert)
+    async def set_monotonic_seq(self):
+        key = self.get_redis_key()
+        self.monotonic_seq = await get_next_counter(key)
+
+
+class FilmScoreModel(MonotonicSequenceMixin, Document):
     """
     Модель таблицы с оценками фильмов.
     """
@@ -16,6 +41,9 @@ class FilmScoreModel(Document):
     film_id: UUID
     user_id: UUID
     film_score: int = Field(..., ge=0, le=10)
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
     class Settings:
         name = "film_scores"
@@ -31,7 +59,7 @@ class FilmScoreModel(Document):
         ]
 
 
-class FilmBookmarkModel(Document):
+class FilmBookmarkModel(MonotonicSequenceMixin, Document):
     """
     Модель таблицы с пользовательскими закладками фильмов.
     """
@@ -39,6 +67,9 @@ class FilmBookmarkModel(Document):
     id: UUID = Field(default_factory=uuid4)  # type: ignore
     film_id: UUID
     user_id: UUID
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
     class Settings:
         name = "film_bookmarks"
@@ -54,7 +85,7 @@ class FilmBookmarkModel(Document):
         ]
 
 
-class FilmReviewModel(Document):
+class FilmReviewModel(MonotonicSequenceMixin, Document):
     """
     Модель таблицы с пользовательскими отзывами на фильмы.
     """
@@ -82,7 +113,7 @@ class FilmReviewModel(Document):
         ]
 
 
-class ReviewLikeModel(Document):
+class ReviewLikeModel(MonotonicSequenceMixin, Document):
     """
     Модель таблицы с лайками на отзывы.
     """
@@ -90,6 +121,9 @@ class ReviewLikeModel(Document):
     id: UUID = Field(default_factory=uuid4)  # type: ignore
     review_id: UUID
     user_id: UUID
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
     class Settings:
         name = "review_likes"

@@ -1,4 +1,4 @@
-name: UGC2-Service
+name: ugc2-service
 
 services:
 
@@ -43,11 +43,28 @@ services:
     restart: always
     volumes:
       - fastapi_log_volume:/app/logs/
+    ports:
+      - "8000:8000"
     depends_on:
       redis-ugc2:
         condition: service_healthy
       mongo:
         condition: service_healthy
+    networks:
+      - auth_network
+
+  grpc-ugc2:
+    build:
+      context: .
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis-ugc2:
+        condition: service_healthy
+    command: ["python", "/app/src/grpc_server/server_aio.py"]
+    ports:
+      - "50051:50051"
+    restart: always
     networks:
       - auth_network
 

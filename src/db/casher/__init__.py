@@ -4,10 +4,23 @@ from typing import Any, Optional, Protocol
 class AbstractCache(Protocol):
     """Абстрактый класс для кэша"""
 
-    async def set(self, key: str, value: Any, expire: int) -> None:
+    async def set(
+            self,
+            key: str,
+            value: Any,
+            expire: Optional[int] = None,
+            raise_exc: bool = False
+    ) -> None:
         pass
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str, raise_exc: bool = False) -> Optional[Any]:
+        pass
+
+    async def incr(
+            self,
+            key: str,
+            amount: int
+    ) -> int:
         pass
 
 
